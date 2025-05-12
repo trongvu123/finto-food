@@ -12,7 +12,8 @@ import {
   ShoppingCart,
   Users,
   Settings,
-  BarChart,
+  Newspaper,
+  Ribbon,
   LogOut
 } from "lucide-react"
 
@@ -23,29 +24,29 @@ const menuItems = [
     icon: LayoutDashboard
   },
   {
-    title: "Products",
+    title: "Sản phẩm",
     href: "/admin/san-pham",
     icon: Package
   },
   {
-    title: "Orders",
+    title: "Đơn hàng",
     href: "/admin/don-hang",
     icon: ShoppingCart
   },
   {
-    title: "Users",
+    title: "Thương hiệu",
     href: "/admin/thuong-hieu",
-    icon: Users
+    icon: Ribbon
   },
   {
-    title: "Settings",
+    title: "Danh mục",
     href: "/admin/danh-muc",
     icon: Settings
   },
   {
-    title: "Statistics",
-    href: "/admin/thong-ke",
-    icon: BarChart
+    title: "Blog",
+    href: "/admin/blog",
+    icon: Newspaper
   }
 ]
 

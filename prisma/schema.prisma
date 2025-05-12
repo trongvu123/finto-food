@@ -48,7 +48,7 @@ model Product {
   nutritionalInfo String?
   ingredients     String?
   brandId         String? // Thêm trường brandId
-  brand           Brand?      @relation(fields: [brandId], references: [id]) // Quan hệ với Brand
+  brand           Brand?      @relation(fields: [brandId], references: [id])
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   orderItems      OrderItem[]
@@ -107,7 +107,7 @@ model OrderItem {
 model BlogPost {
   id        String   @id @default(cuid())
   title     String
-  slug      String   @unique
+  category  String
   content   String
   excerpt   String?
   image     String?

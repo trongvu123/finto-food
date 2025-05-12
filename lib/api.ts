@@ -227,3 +227,62 @@ export  const createPayment = async (amount: number, description: string) => {
 
     return await res.json();
   };
+
+// Blog Post APIs
+export const getBlogPosts = async (params?: { category?: string }) => {
+    const searchParams = new URLSearchParams()
+    if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+            if (value) searchParams.append(key, value.toString())
+        })
+    }
+    const res = await fetch(`/api/admin/blog?${searchParams}`);
+    if (!res.ok) throw new Error("Failed to fetch blog posts");
+    return res.json();
+};
+
+export const getBlogPost = async (id: string) => {
+    const res = await fetch(`/api/admin/blog/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch blog post");
+    return res.json();
+};
+
+export const createBlogPost = async (data: {
+    title: string;
+    content: string;
+    excerpt?: string;
+    image?: string;
+    published?: boolean;
+}) => {
+    const res = await fetch("/api/admin/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to create blog post");
+    return res.json();
+};
+
+export const updateBlogPost = async (id: string, data: {
+    title: string;
+    content: string;
+    excerpt?: string;
+    image?: string;
+    published?: boolean;
+}) => {
+    const res = await fetch(`/api/admin/blog/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to update blog post");
+    return res.json();
+};
+
+export const deleteBlogPost = async (id: string) => {
+    const res = await fetch(`/api/admin/blog/${id}`, {
+        method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete blog post");
+    return res.json();
+};
