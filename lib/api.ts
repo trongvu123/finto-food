@@ -1,5 +1,50 @@
 import { OrderStatus } from "@prisma/client"
+    export interface IAddressResponse<T> {
+        data: T[]; // Mảng dữ liệu (tỉnh, quận, xã)
+        data_name: string; // Tên loại dữ liệu (ví dụ: Tỉnh thành Việt Nam)
+        error: number; // 0 nếu thành công
+        error_text: string; // Thông báo lỗi hoặc thành công
+    }
+      export interface IProvince {
+        id: string; // API trả về id dạng string (ví dụ: 89)
+        name: string; // Tên tỉnh (ví dụ: An Giang)
+        name_en: string; // Tên tiếng Anh (ví dụ: An Giang)
+        full_name: string; // Tên đầy đủ (ví dụ: Tỉnh An Giang)
+        full_name_en?: string; // Tên đầy đủ tiếng Anh (có thể không có)
+        latitude?: string; // Vĩ độ (có thể không có)
+        longitude?: string; // Kinh độ (có thể không có)
+        code?: string; // Mã tỉnh (có thể không có)
+        administrative_unit_id?: string; // ID đơn vị hành chính (có thể không có)
+        administrative_region_id?: string; // ID vùng hành chính (có thể không có)
+    }
 
+    // Định nghĩa type cho quận/huyện (tương tự tỉnh/thành, nhưng có thể khác một chút)
+    export interface IDistrict {
+        id: string;
+        name: string;
+        name_en: string;
+        full_name: string;
+        full_name_en?: string;
+        latitude?: string;
+        longitude?: string;
+        code?: string;
+        province_id?: string; // ID của tỉnh liên quan
+        administrative_unit_id?: string;
+    }
+
+    // Định nghĩa type cho xã/phường
+    export interface IWard {
+        id: string;
+        name: string;
+        name_en: string;
+        full_name: string;
+        full_name_en?: string;
+        latitude?: string;
+        longitude?: string;
+        code?: string;
+        district_id?: string; // ID của quận/huyện liên quan
+        administrative_unit_id?: string;
+    }
 // Product APIs
 export const getProducts = async (params?: {
     page?: number
@@ -37,6 +82,7 @@ export const createOrder = async (data: {
     paymentMethod: string
     fullName: string
     email: string
+    userId?: string
 }) => {
     const res = await fetch("/api/orders", {
         method: "POST",
@@ -135,3 +181,49 @@ export async function getUser() {
     }
     return response.json()
 } 
+
+ export const getAllProvinces = async (): Promise<IAddressResponse<IProvince>> => {
+  const res = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+  if (!res.ok) throw new Error('Failed to fetch provinces')
+  return await res.json()
+}
+
+export const sGetAllProvinces = async (): Promise<IAddressResponse<IProvince>> => {
+  const res = await fetch('/api/address/province')
+  if (!res.ok) throw new Error('Failed to fetch provinces from server')
+  return await res.json()
+}
+
+export const getAllDistricts = async (provinceId: string): Promise<IAddressResponse<IDistrict>> => {
+  const res = await fetch(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`)
+  if (!res.ok) throw new Error('Failed to fetch districts')
+  return await res.json()
+}
+
+export const sGetAllDistricts = async (provinceId: string): Promise<IAddressResponse<IDistrict>> => {
+  const res = await fetch(`/api/address/district/${provinceId}`)
+  if (!res.ok) throw new Error('Failed to fetch districts from server')
+  return await res.json()
+}
+
+export const getAllWards = async (districtId: string): Promise<IAddressResponse<IWard>> => {
+  const res = await fetch(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`)
+  if (!res.ok) throw new Error('Failed to fetch wards')
+  return await res.json()
+}
+
+export const sGetAllWards = async (districtId: string): Promise<IAddressResponse<IWard>> => {
+  const res = await fetch(`/api/address/ward/${districtId}`)
+  if (!res.ok) throw new Error('Failed to fetch wards from server')
+  return await res.json()
+}
+
+export  const createPayment = async (amount: number, description: string) => {
+    const res = await fetch('/api/create-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, description }),
+    });
+
+    return await res.json();
+  };

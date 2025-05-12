@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { OrderStatus } from "@prisma/client"
 import { formatCurrency } from "@/lib/utils"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { useAppStore } from "@/components/app-provider"
 
 interface Order {
     id: string

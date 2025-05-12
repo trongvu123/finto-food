@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json()
-        const { items, shippingAddress, shippingProvince, shippingDistrict, shippingWard, phone, paymentMethod, fullName, email } = body
+        const { items, shippingAddress, shippingProvince, shippingDistrict, shippingWard, phone, paymentMethod, fullName, email, userId } = body
 
         if (!items || !items.length) {
             return new NextResponse("Items are required", { status: 400 })
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
             paymentMethod,
             fullName,
             email,
-
+            userId,
             items: {
                 create: items.map((item: any) => ({
                     productId: item.productId,
@@ -67,11 +67,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Nếu có user => thêm `user.connect`
-        if (user?.id) {
-            orderData.user = {
-                connect: { id: user.id }
-            }
-        }
+        
 
 
         const order = await prisma.order.create({

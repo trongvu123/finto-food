@@ -11,6 +11,7 @@ import { useMobile } from "@/hooks/use-mobile"
 import { useCart } from "@/contexts/cart-context"
 import { getUser } from "@/lib/api"
 import { toast } from "sonner"
+import { IUser, useAppStore } from "./app-provider"
 
 const dogCategories = [
   { name: "Thức ăn hạt", href: "/san-pham/cho/thuc-an-hat" },
@@ -38,9 +39,12 @@ export default function Header() {
   const isMobile = useMobile()
   const { totalItems } = useCart()
   const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<IUser | undefined>(undefined)
   const [loading, setLoading] = useState(true)
+const userState = useAppStore((state) => state.user)
+const setUserState = useAppStore((state) => state.setUser)
 
+  console.log("userState", userState)
   const handleCategoryClick = (href: string) => {
     router.push(href)
     setIsMenuOpen(false)
@@ -49,8 +53,9 @@ export default function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getUser()
-        setUser(data.user)
+        const userState = useAppStore.getState().user
+        setUser(userState)
+        console.log("userState", userState)
       } catch (error) {
         console.error("Failed to fetch user:", error)
       } finally {
@@ -59,12 +64,13 @@ export default function Header() {
     }
 
     fetchUser()
-  }, [])
+  }, [userState])
 
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" })
-      setUser(null)
+      setUser(undefined)
+      localStorage.removeItem("token")
       toast.success("Đăng xuất thành công")
       router.push("/")
     } catch (error) {
@@ -120,14 +126,19 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/gio-hang" className="relative">
-            <ShoppingCart className="h-6 w-6" />
-            {totalItems > 0 && (
-              <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {totalItems}
-              </span>
-            )}
-          </Link>
+          {
+            (user?.role === "USER" || user === undefined) && (
+              <Link href="/gio-hang" className="relative">
+                <ShoppingCart className="h-6 w-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+
+            )
+          }
 
           {loading ? (
             <div className="h-8 w-20 animate-pulse rounded bg-muted" />
@@ -139,6 +150,14 @@ export default function Header() {
                   onClick={() => router.push("/admin")}
                 >
                   Quản lý
+                </Button>
+              )}
+              {user.role === "USER" && (
+                <Button
+
+                  onClick={() => router.push("/don-hang")}
+                >
+                  Đơn hàng
                 </Button>
               )}
               <div className="flex items-center space-x-2">

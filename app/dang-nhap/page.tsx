@@ -6,9 +6,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { login } from "@/lib/api"
-import { toast } from "sonner"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
+    const { toast } = useToast()
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -21,17 +22,20 @@ export default function LoginPage() {
         try {
             setLoading(true)
             const res = await login(formData)
-            if (res.token) {
-                localStorage.setItem("token", res.token)
-                toast.success("Đăng nhập thành công!")
+            console.log('res', res)
+            if (res.user.token) {
+                localStorage.setItem("token", res.user.token)
+                toast({
+                    title: "Đăng nhập thành công",
+                })
                 router.push("/")
-            } else {
-                toast.error("Đăng nhập thất bại")
             }
 
             router.push("/")
         } catch (error) {
-            toast.error("Đăng nhập thất bại")
+            toast({
+                title: "Đăng nhập thất bại",
+            })
             console.error(error)
         } finally {
             setLoading(false)

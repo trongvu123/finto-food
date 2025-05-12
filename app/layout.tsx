@@ -9,6 +9,7 @@ import { CartProvider } from "@/contexts/cart-context"
 import { ChatBot } from "@/components/chat-bot"
 import { Toast } from "@/components/ui/toast"
 import { Toaster } from "@/components/ui/toaster"
+import AppProvider from "@/components/app-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,7 +30,9 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
             <div className="flex min-h-screen flex-col">
               <Header />
-              <main className="flex-1">{children}</main>
+              <AppProvider>
+                <main className="flex-1">{children}</main>
+              </AppProvider>
               <Toaster />
               <Footer />
             </div>

@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/contexts/cart-context"
-import { createOrder } from "@/lib/api"
+import { createOrder, createPayment, IAddressResponse, IDistrict, IProvince, IWard, sGetAllDistricts, sGetAllProvinces, sGetAllWards } from "@/lib/api"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,77 +11,27 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useAppStore } from "@/components/app-provider"
+import { QRCodeSVG } from 'qrcode.react';
 
-// Danh sách tỉnh/thành phố
-const provinces = [
-  { id: "hcm", name: "TP. Hồ Chí Minh" },
-  { id: "hn", name: "Hà Nội" },
-  { id: "dn", name: "Đà Nẵng" }
-]
-
-// Danh sách quận/huyện theo tỉnh/thành phố
-const districts = {
-  hcm: [
-    { id: "q1", name: "Quận 1" },
-    { id: "q2", name: "Quận 2" },
-    { id: "q3", name: "Quận 3" }
-  ],
-  hn: [
-    { id: "hbt", name: "Hai Bà Trưng" },
-    { id: "hk", name: "Hoàn Kiếm" },
-    { id: "cg", name: "Cầu Giấy" }
-  ],
-  dn: [
-    { id: "hs", name: "Hải Châu" },
-    { id: "lt", name: "Liên Chiểu" },
-    { id: "ng", name: "Ngũ Hành Sơn" }
-  ]
-}
-
-// Danh sách phường/xã theo quận/huyện
-const wards = {
-  q1: [
-    { id: "bnt", name: "Bến Nghé" },
-    { id: "bn", name: "Bến Thành" }
-  ],
-  q2: [
-    { id: "td", name: "Thảo Điền" },
-    { id: "an", name: "An Phú" }
-  ],
-  q3: [
-    { id: "vt", name: "Võ Thị Sáu" },
-    { id: "nt", name: "Nguyễn Thị Minh Khai" }
-  ],
-  hbt: [
-    { id: "bt", name: "Bách Khoa" },
-    { id: "mb", name: "Minh Khai" }
-  ],
-  hk: [
-    { id: "ht", name: "Hàng Trống" },
-    { id: "hd", name: "Hàng Đào" }
-  ],
-  cg: [
-    { id: "dt", name: "Dịch Vọng" },
-    { id: "nt", name: "Nghĩa Tân" }
-  ],
-  hs: [
-    { id: "tt", name: "Thanh Bình" },
-    { id: "hb", name: "Hòa Cường Bắc" }
-  ],
-  lt: [
-    { id: "hc", name: "Hòa Khánh Bắc" },
-    { id: "hn", name: "Hòa Khánh Nam" }
-  ],
-  ng: [
-    { id: "mb", name: "Mỹ An" },
-    { id: "kb", name: "Khuê Mỹ" }
-  ]
-}
 
 export default function PaymentPage() {
   const router = useRouter()
   const { items, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
+  const [addressResponse, setAddressResponse] = useState<IAddressResponse<IProvince> | null>(null);
+  const [districtsResponse, setDistrictsResponse] = useState<IAddressResponse<IDistrict> | null>(null);
+  const [wardsResponse, setWardsResponse] = useState<IAddressResponse<IWard> | null>(null);
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(null);
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
+  const [selectedWardId, setSelectedWardId] = useState<string | null>(null);
+  const [districtLoading, setDistrictLoading] = useState(false);
+  const [wardLoading, setWardLoading] = useState(false);
+  const [qrcode, setQrcode] = useState<string | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState("cod")
+  const qrSvg = useRef<HTMLDivElement>(null)
+  const user = useAppStore((state) => state.user)
+  console.log("user dat hang", user)
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
     email: "",
@@ -94,11 +44,78 @@ export default function PaymentPage() {
   })
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const resAddress = await sGetAllProvinces();
+        setAddressResponse(resAddress);
+        console.log('Full response:', resAddress);
+        console.log('Provinces data:', resAddress.data);
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+      }
+    };
 
+    fetchProvinces();
+  }, []);
+  useEffect(() => {
+    const init = async () => {
+      if (total > 0) {
+        const createQrCode = await createPayment(total, "Thanh toán đơn hàng");
+        setQrcode(createQrCode.checkoutUrl);
+      }
+    };
+    init();
+  }, [total]);
+  useEffect(() => {
+    const handleSelectProvince = async () => {
+      if (!selectedProvinceId) return;
+      try {
+        setDistrictLoading(true);
+        const resDistrict = await sGetAllDistricts(selectedProvinceId);
+        setWardsResponse(null);
+        if (resDistrict) {
+          setDistrictsResponse(resDistrict);
+          setDistrictLoading(false);
+        }
+        console.log('resDistrict', resDistrict);
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    handleSelectProvince();
+  }, [selectedProvinceId])
+
+  useEffect(() => {
+    const handleSelectDistrict = async () => {
+      if (!selectedDistrictId) return;
+      try {
+        setWardLoading(true);
+        const resWard = await sGetAllWards(selectedDistrictId);
+        if (resWard) {
+          setWardsResponse(resWard);
+          setWardLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+    handleSelectDistrict();
+  }, [selectedDistrictId])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
+            const province = addressResponse?.data.find(
+                p => String(p.id) === String(shippingInfo.province)
+            )?.full_name || '';
+            const district = districtsResponse?.data.find(
+                d => String(d.id) === String(shippingInfo.district)
+            )?.full_name || '';
+            const ward = wardsResponse?.data.find(
+                w => String(w.id) === String(shippingInfo.ward)
+            )?.full_name || '';
     try {
       await createOrder({
         items: items.map(item => ({
@@ -106,13 +123,14 @@ export default function PaymentPage() {
           quantity: item.quantity
         })),
         shippingAddress: shippingInfo.address,
-        shippingProvince: shippingInfo.province,
-        shippingDistrict: shippingInfo.district,
-        shippingWard: shippingInfo.ward,
+        shippingProvince: province,
+        shippingDistrict: district,
+        shippingWard: ward,
         phone: shippingInfo.phone,
         paymentMethod: shippingInfo.paymentMethod,
         fullName: shippingInfo.name,
-        email: shippingInfo.email
+        email: shippingInfo.email,
+        userId: user?.id
       })
       await fetch('/api/products/update-stock', {
         method: 'POST',
@@ -206,24 +224,27 @@ export default function PaymentPage() {
                   <Label htmlFor="province">Tỉnh/Thành phố</Label>
                   <Select
                     value={shippingInfo.province}
-                    onValueChange={(value) =>
+                    onValueChange={(value) => {
+
                       setShippingInfo({
                         ...shippingInfo,
                         province: value,
                         district: "",
                         ward: ""
                       })
-                    }
+                      setSelectedProvinceId(value);
+                    }}
+
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn Tỉnh/Thành phố" />
                     </SelectTrigger>
                     <SelectContent>
-                      {provinces.map((province) => (
+                      {addressResponse ? addressResponse?.data.map((province) => (
                         <SelectItem key={province.id} value={province.id}>
-                          {province.name}
+                          {province.full_name}
                         </SelectItem>
-                      ))}
+                      )) : []}
                     </SelectContent>
                   </Select>
                 </div>
@@ -231,12 +252,15 @@ export default function PaymentPage() {
                   <Label htmlFor="district">Quận/Huyện</Label>
                   <Select
                     value={shippingInfo.district}
-                    onValueChange={(value) =>
+                    onValueChange={(value) => {
                       setShippingInfo({
                         ...shippingInfo,
                         district: value,
                         ward: ""
                       })
+                      setSelectedDistrictId(value);
+                    }
+
                     }
                     disabled={!shippingInfo.province}
                   >
@@ -244,14 +268,13 @@ export default function PaymentPage() {
                       <SelectValue placeholder="Chọn Quận/Huyện" />
                     </SelectTrigger>
                     <SelectContent>
-                      {shippingInfo.province &&
-                        districts[shippingInfo.province as keyof typeof districts]?.map(
-                          (district) => (
-                            <SelectItem key={district.id} value={district.id}>
-                              {district.name}
-                            </SelectItem>
-                          )
-                        )}
+                      {districtsResponse?.data && districtsResponse?.data?.map(
+                        (district) => (
+                          <SelectItem key={district.id} value={district.id}>
+                            {district.name}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -259,8 +282,10 @@ export default function PaymentPage() {
                   <Label htmlFor="ward">Phường/Xã</Label>
                   <Select
                     value={shippingInfo.ward}
-                    onValueChange={(value) =>
+                    onValueChange={(value) => {
                       setShippingInfo({ ...shippingInfo, ward: value })
+                      setSelectedWardId(value);
+                    }
                     }
                     disabled={!shippingInfo.district}
                   >
@@ -268,12 +293,11 @@ export default function PaymentPage() {
                       <SelectValue placeholder="Chọn Phường/Xã" />
                     </SelectTrigger>
                     <SelectContent>
-                      {shippingInfo.district &&
-                        wards[shippingInfo.district as keyof typeof wards]?.map((ward) => (
-                          <SelectItem key={ward.id} value={ward.id}>
-                            {ward.name}
-                          </SelectItem>
-                        ))}
+                      {wardsResponse ? wardsResponse?.data?.map((ward) => (
+                        <SelectItem key={ward.id} value={ward.id}>
+                          {ward.name}
+                        </SelectItem>
+                      )) : []}
                     </SelectContent>
                   </Select>
                 </div>
@@ -281,9 +305,10 @@ export default function PaymentPage() {
                   <Label>Phương thức thanh toán</Label>
                   <RadioGroup
                     value={shippingInfo.paymentMethod}
-                    onValueChange={(value) =>
-                      setShippingInfo({ ...shippingInfo, paymentMethod: value })
-                    }
+                    onValueChange={(value) => {
+                      setShippingInfo({ ...shippingInfo, paymentMethod: value });
+                      setSelectedWardId(value);
+                    }}
                     className="mt-2"
                   >
                     <div className="flex items-center space-x-2">
@@ -291,14 +316,30 @@ export default function PaymentPage() {
                       <Label htmlFor="cod">Thanh toán khi nhận hàng (COD)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="banking" id="banking" />
+                      <RadioGroupItem value="banking" id="banking" onChange={(e) => {
+                        setPaymentMethod(e.currentTarget.value)
+                      }} />
                       <Label htmlFor="banking">Chuyển khoản ngân hàng</Label>
                     </div>
                   </RadioGroup>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Đang xử lý..." : "Đặt hàng"}
-                </Button>
+                {
+                  shippingInfo.paymentMethod === "cod" ? (
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? "Đang xử lý..." : "Đặt hàng"}
+                    </Button>
+                  ) : (
+                    <div onClick={() => window.open(qrcode!, "_blank", "noopener,noreferrer")}>
+                      <a href={qrcode!} target="_blank" rel="noopener noreferrer" className="pointer-events-none">
+                        <Button type="button" className="w-full" disabled={loading}>
+                          {loading ? "Đang xử lý..." : "Đặt hàng"}
+                        </Button>
+                      </a>
+                    </div>
+
+                  )
+                }
+
               </form>
             </CardContent>
           </Card>

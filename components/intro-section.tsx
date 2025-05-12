@@ -1,37 +1,89 @@
-import { Shield, Truck, Award } from "lucide-react"
+"use client"
+
+import { useRef } from "react"
+import { motion, useInView } from "framer-motion"
+import { Shield, Truck, Award, Sparkles } from "lucide-react"
 
 export default function IntroSection() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.3 })
+
+  const features = [
+    {
+      icon: <Award className="h-8 w-8 text-teal-600" />,
+      title: "Chất lượng cao",
+      description: "Chúng tôi chỉ cung cấp thức ăn thú cưng chất lượng cao từ các thương hiệu uy tín.",
+      color: "bg-teal-100",
+    },
+    {
+      icon: <Truck className="h-8 w-8 text-blue-600" />,
+      title: "Giao hàng nhanh chóng",
+      description: "Giao hàng nhanh chóng trong vòng 24 giờ đối với các đơn hàng trong nội thành.",
+      color: "bg-blue-100",
+    },
+    {
+      icon: <Shield className="h-8 w-8 text-purple-600" />,
+      title: "Đảm bảo hài lòng",
+      description: "Chúng tôi cam kết hoàn tiền 100% nếu bạn không hài lòng với sản phẩm.",
+      color: "bg-purple-100",
+    },
+    {
+      icon: <Sparkles className="h-8 w-8 text-amber-600" />,
+      title: "Sản phẩm đa dạng",
+      description: "Đa dạng sản phẩm cho mọi nhu cầu và mọi loại thú cưng của bạn.",
+      color: "bg-amber-100",
+    },
+  ]
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  }
+
   return (
-    <section className="py-12">
+    <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
-        <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Tại sao chọn Finto?</h2>
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3">
-              <Award className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="mb-2 text-xl font-semibold">Chất lượng cao</h3>
-            <p className="text-gray-600">
-              Chúng tôi chỉ cung cấp thức ăn thú cưng chất lượng cao từ các thương hiệu uy tín.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3">
-              <Truck className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="mb-2 text-xl font-semibold">Giao hàng nhanh chóng</h3>
-            <p className="text-gray-600">
-              Giao hàng nhanh chóng trong vòng 24 giờ đối với các đơn hàng trong nội thành.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-3">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="mb-2 text-xl font-semibold">Đảm bảo hài lòng</h3>
-            <p className="text-gray-600">Chúng tôi cam kết hoàn tiền 100% nếu bạn không hài lòng với sản phẩm.</p>
-          </div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl font-bold md:text-4xl text-gray-900 mb-4">Tại sao chọn Finto?</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Chúng tôi cung cấp những sản phẩm tốt nhất cho thú cưng của bạn với dịch vụ chăm sóc khách hàng tuyệt vời.
+          </p>
+        </motion.div>
+
+        <motion.div
+          ref={ref}
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"
+        >
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              className="flex flex-col items-center text-center bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className={`mb-4 rounded-full ${feature.color} p-4`}>{feature.icon}</div>
+              <h3 className="mb-3 text-xl font-semibold text-gray-900">{feature.title}</h3>
+              <p className="text-gray-600">{feature.description}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   )
