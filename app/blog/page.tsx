@@ -73,7 +73,7 @@ export default function BlogPage() {
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost)
 
   const featuredPost = allPosts[0]
-
+  console.log('featuredPost', featuredPost)
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -148,10 +148,11 @@ export default function BlogPage() {
           <motion.div
             ref={featuredRef}
             initial={{ opacity: 0, y: 30 }}
-            animate={isFeaturedInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            animate={ { opacity: 1, y: 0 } }
             transition={{ duration: 0.6 }}
             className="mb-16"
           >
+          <div></div>
             <Link href={`/blog/${featuredPost.id}`} className="group block relative overflow-hidden rounded-2xl shadow-lg">
               <div className="aspect-[21/9] w-full">
                 <Image

@@ -37,7 +37,7 @@ export default function Home() {
           <motion.div
             ref={ref}
             initial={{ opacity: 0, y: 50 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 } }
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <IntroSection />

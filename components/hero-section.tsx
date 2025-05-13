@@ -23,7 +23,7 @@ export default function HeroSection() {
       description: "Khám phá các thiết bị và phụ kiện thông minh giúp chăm sóc thú cưng dễ dàng hơn.",
       image: "/placeholder.svg?height=600&width=800",
       buttonText: "Xem sản phẩm",
-      buttonLink: "/san-pham/phu-kien",
+      buttonLink: "/san-pham",
     },
   ]
 

@@ -1,12 +1,21 @@
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
-import { Shield, Truck, Award, Sparkles } from "lucide-react"
+import { Shield, Truck, Award, Sparkles } from 'lucide-react'
 
 export default function IntroSection() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.3 })
+  // Tạo ref cho toàn bộ section thay vì chỉ cho grid
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.1  // Giảm xuống 0.1 để kích hoạt sớm hơn
+  })
+const [isMounted, setIsMounted] = useState(false)
+
+useEffect(() => {
+  setIsMounted(true)
+}, [])
 
   const features = [
     {
@@ -51,11 +60,12 @@ export default function IntroSection() {
   }
 
   return (
-    <section className="py-16 md:py-24">
+    // Gắn ref vào toàn bộ section
+    <section className="py-16 md:py-24" >
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 } }
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
@@ -66,10 +76,9 @@ export default function IntroSection() {
         </motion.div>
 
         <motion.div
-          ref={ref}
           variants={containerVariants}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          animate={"visible"}
           className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"
         >
           {features.map((feature, index) => (
