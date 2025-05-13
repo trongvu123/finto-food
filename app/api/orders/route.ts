@@ -61,7 +61,8 @@ export async function POST(req: NextRequest) {
                 create: items.map((item: any) => ({
                     productId: item.productId,
                     quantity: item.quantity,
-                    price: products.find(p => p.id === item.productId)?.price || 0
+                    price: products.find(p => p.id === item.productId)?.price || 0,
+                    userId: userId
                 }))
             }
         }

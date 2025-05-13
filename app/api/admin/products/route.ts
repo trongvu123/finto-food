@@ -72,7 +72,9 @@ export async function POST(request: Request) {
                 stock: data.stock,
                 images: data.images,
                 categoryId: data.categoryId,
-                brandId: data.brandId
+                brandId: data.brandId,
+                nutritionalInfo: data.nutritionalInfo,
+                ingredients: data.ingredients
             },
             include: {
                 category: true,

@@ -286,3 +286,41 @@ export const deleteBlogPost = async (id: string) => {
     if (!res.ok) throw new Error("Failed to delete blog post");
     return res.json();
 };
+
+// Review APIs
+export const getReviews = async (productId: string) => {
+    const res = await fetch(`/api/review?productId=${productId}`);
+    if (!res.ok) throw new Error("Failed to fetch reviews");
+    return res.json();
+};
+
+export const createReview = async (data: {
+    productId: string;
+    userId: string;
+    content: string;
+    rating: number;
+}) => {
+    const res = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to create review");
+    return res.json();
+};
+
+export const updateReviewStatus = async (id: string, status: string) => {
+    const res = await fetch("/api/review", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+    });
+    if (!res.ok) throw new Error("Failed to update review status");
+    return res.json();
+};
+
+export const checkProductPurchase = async (productId: string, userId: string): Promise<boolean> => {
+    const res = await fetch(`/api/check-product-purchase?productId=${productId}&userId=${userId}`);
+    if (!res.ok) throw new Error("Failed to check product purchase");
+    return res.json();
+};

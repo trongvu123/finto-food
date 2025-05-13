@@ -19,6 +19,7 @@ export async function POST(req: Request) {
       description,
       returnUrl: '/thanh-toan/xac-nhan',
       cancelUrl: '/thanh-toan/xac-nhan',
+      webhookUrl: 'https://your-site.vercel.app/api/payment/webhook',
     };
 
     const response = await payos.createPaymentLink(paymentBody);

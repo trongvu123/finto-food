@@ -31,43 +31,65 @@ import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { use } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useAppStore } from "@/components/app-provider"
+import { getReviews, updateReviewStatus, checkProductPurchase, createReview } from "@/lib/api"
+
+interface Review {
+    id:        string;
+    userId:    string;
+    status:    string;
+    productId: string;
+    content:   string;
+    rating:    number;
+    createdAt: Date;
+    updatedAt: Date;
+  user: {
+  id:        string;
+    name:      string;
+    email:     string;
+    password:  string;
+    role:      string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}
 
 interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  salePrice: number | null
-  stock: number
-  sold: number
-  images: string[]
-  categoryId: string
-  nutritionalInfo: string | null
-  ingredients: string | null
-  brandId: string
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  salePrice: number | null;
+  stock: number;
+  sold: number;
+  images: string[];
+  categoryId: string;
+  nutritionalInfo: string | null;
+  ingredients: string | null;
+  brandId: string;
+  createdAt: string;
+  updatedAt: string;
   category: {
-    id: string
-    name: string
-    description: string
-    createdAt: string
-    updatedAt: string
-  }
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+  };
   brand: {
-    id: string
-    name: string
-    description: string
-    logo: string | null
-    website: string | null
-    createdAt: string
-    updatedAt: string
-  }
+    id: string;
+    name: string;
+    description: string;
+    logo: string | null;
+    website: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 interface ProductResponse {
-  product: Product
-  relatedProducts: Product[]
+  product: Product;
+  relatedProducts: Product[];
 }
 
 // Format giá tiền sang VND
@@ -101,7 +123,7 @@ export default function ProductDetailPage({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isWishlisted, setIsWishlisted] = useState(false)
 
-  // Tạo rating giả
+  const user = useAppStore((state) => state.user)
   const rating = 4.5
   const reviewCount = 124
 
@@ -339,10 +361,10 @@ export default function ProductDetailPage({
                   <Star
                     key={star}
                     className={`h-4 w-4 ${star <= Math.floor(rating)
-                        ? "fill-yellow-400 text-yellow-400"
-                        : star - 0.5 <= rating
-                          ? "fill-yellow-400/50 text-yellow-400"
-                          : "text-gray-300"
+                      ? "fill-yellow-400 text-yellow-400"
+                      : star - 0.5 <= rating
+                        ? "fill-yellow-400/50 text-yellow-400"
+                        : "text-gray-300"
                       }`}
                   />
                 ))}
@@ -556,10 +578,10 @@ export default function ProductDetailPage({
                         <Star
                           key={star}
                           className={`h-5 w-5 ${star <= Math.floor(rating)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : star - 0.5 <= rating
-                                ? "fill-yellow-400/50 text-yellow-400"
-                                : "text-gray-300"
+                            ? "fill-yellow-400 text-yellow-400"
+                            : star - 0.5 <= rating
+                              ? "fill-yellow-400/50 text-yellow-400"
+                              : "text-gray-300"
                             }`}
                         />
                       ))}
@@ -719,32 +741,92 @@ export default function ProductDetailPage({
 
 // Review Form Component
 function ReviewForm({ productId }: { productId: string }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [rating, setRating] = useState(5)
-  const [comment, setComment] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  const [isOpen, setIsOpen] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [loadingPurchaseCheck, setLoadingPurchaseCheck] = useState(true);
+  const { toast } = useToast();
+  const router = useRouter();
+  const user = useAppStore((state) => state.user);
+
+  useEffect(() => {
+    const checkPurchase = async () => {
+      if (user) {
+        setLoadingPurchaseCheck(true);
+        try {
+          const purchased = await checkProductPurchase(productId, user.id);
+          setHasPurchased(purchased);
+        } catch (error) {
+          console.error("Failed to check product purchase:", error);
+        } finally {
+          setLoadingPurchaseCheck(false);
+        }
+      } else {
+        setHasPurchased(false);
+        setLoadingPurchaseCheck(false);
+      }
+    };
+
+    checkPurchase();
+  }, [productId, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    // Giả lập gửi đánh giá
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      if (user) {
+        await createReview({
+          productId: productId,
+          userId: user.id,
+          content: comment,
+          rating: rating,
+        });
 
-    toast({
-      title: "Thành công",
-      description: "Đánh giá của bạn đã được gửi và đang chờ phê duyệt",
-    })
+        toast({
+          title: "Thành công",
+          description: "Đánh giá của bạn đã được gửi và đang chờ phê duyệt",
+        });
+      } else {
+        toast({
+          title: "Lỗi",
+          description: "Bạn cần đăng nhập để gửi đánh giá",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to create review:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể gửi đánh giá",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+      setIsOpen(false);
+      setComment("");
+    }
+  };
 
-    setIsSubmitting(false)
-    setIsOpen(false)
-    setComment("")
+  const handleClickReivewButton = () => {
+    if (!user) {
+      router.push("/dang-nhap");
+    } else {
+      setIsOpen(true);
+    }
+  };
+
+  if (loadingPurchaseCheck) {
+    return <Button disabled>Đang kiểm tra...</Button>;
   }
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Viết đánh giá</Button>
+      <Button onClick={handleClickReivewButton} disabled={!hasPurchased}>
+        Viết đánh giá
+      </Button>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -796,107 +878,81 @@ function ReviewForm({ productId }: { productId: string }) {
         </div>
       )}
     </>
-  )
+  );
 }
 
 // Review List Component
 function ReviewList({ productId }: { productId: string }) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [isAdmin, setIsAdmin] = useState(false) // Giả lập quyền admin
-  const reviewsPerPage = 3
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const reviewsPerPage = 3;
+  const user = useAppStore((state) => state.user);
 
-  // Giả lập dữ liệu đánh giá
-  const mockReviews = [
-    {
-      id: "1",
-      user: {
-        name: "Nguyễn Văn A",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      rating: 5,
-      comment: "Sản phẩm rất tốt, thú cưng nhà mình rất thích. Giao hàng nhanh, đóng gói cẩn thận.",
-      date: "2 ngày trước",
-      isHidden: false,
-    },
-    {
-      id: "2",
-      user: {
-        name: "Trần Thị B",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      rating: 4,
-      comment: "Chất lượng sản phẩm tốt, giá cả hợp lý. Sẽ mua lại lần sau.",
-      date: "1 tuần trước",
-      isHidden: false,
-    },
-    {
-      id: "3",
-      user: {
-        name: "Lê Văn C",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      rating: 5,
-      comment: "Thú cưng nhà mình rất thích sản phẩm này. Sẽ tiếp tục ủng hộ shop.",
-      date: "2 tuần trước",
-      isHidden: false,
-    },
-    {
-      id: "4",
-      user: {
-        name: "Phạm Thị D",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      rating: 3,
-      comment: "Sản phẩm tạm ổn, nhưng giá hơi cao so với chất lượng.",
-      date: "3 tuần trước",
-      isHidden: false,
-    },
-    {
-      id: "5",
-      user: {
-        name: "Hoàng Văn E",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      rating: 5,
-      comment: "Rất hài lòng với sản phẩm, sẽ giới thiệu cho bạn bè.",
-      date: "1 tháng trước",
-      isHidden: false,
-    },
-  ]
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setLoading(true);
+      try {
+        const fetchedReviews = await getReviews(productId);
+        setReviews(fetchedReviews);
+      } catch (error) {
+        console.error("Failed to fetch reviews:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [reviews, setReviews] = useState(mockReviews)
+    fetchReviews();
+  }, [productId]);
 
   // Tính toán số trang
-  const totalPages = Math.ceil(reviews.length / reviewsPerPage)
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
 
   // Lấy đánh giá cho trang hiện tại
   const currentReviews = reviews
-    .filter((review) => !review.isHidden)
-    .slice((currentPage - 1) * reviewsPerPage, currentPage * reviewsPerPage)
+    .slice((currentPage - 1) * reviewsPerPage, currentPage * reviewsPerPage);
 
   // Xử lý ẩn đánh giá (chỉ dành cho admin)
-  const toggleHideReview = (reviewId: string) => {
-    setReviews(reviews.map((review) => (review.id === reviewId ? { ...review, isHidden: !review.isHidden } : review)))
-  }
+  const toggleHideReview = async (reviewId: string) => {
+    try {
+      // Assuming you have an API endpoint to update review status
+      const updatedReview = reviews.find((review) => review.id === reviewId);
+      if (updatedReview) {
+        await updateReviewStatus(reviewId, updatedReview.status === "ACTIVE" ? "INACTIVE" : "ACTIVE");
+        // After successful update, refresh the reviews
+        const fetchedReviews = await getReviews(productId);
+        setReviews(fetchedReviews);
+      }
+    } catch (error) {
+      console.error("Failed to toggle review status:", error);
+    }
+  };
 
-  // Chuyển đổi chế độ admin (chỉ để demo)
+  // Chuyển đổi chế độ admin
   const toggleAdminMode = () => {
-    setIsAdmin(!isAdmin)
+    setIsAdmin(!isAdmin);
+  };
+
+  if (loading) {
+    return <div className="text-center py-8 text-gray-500">Đang tải đánh giá...</div>;
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h4 className="font-medium">Tổng cộng: {reviews.filter((r) => !r.isHidden).length} đánh giá</h4>
-        <Button variant="outline" size="sm" onClick={toggleAdminMode} className="text-xs">
-          {isAdmin ? "Thoát chế độ Admin" : "Chế độ Admin"}
-        </Button>
+        <h4 className="font-medium">Tổng cộng: {reviews.length} đánh giá</h4>
+        {user?.role === "ADMIN" && (
+          <Button variant="outline" size="sm" onClick={toggleAdminMode} className="text-xs">
+            {isAdmin ? "Thoát chế độ Admin" : "Chế độ Admin"}
+          </Button>
+        )}
       </div>
 
       <div className="space-y-6">
         {currentReviews.length > 0 ? (
           <>
-            {currentReviews.map((review) => (
+            {currentReviews.map((review: Review) => (
               <motion.div
                 key={review.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -907,14 +963,14 @@ function ReviewList({ productId }: { productId: string }) {
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
                       <Image
-                        src={review.user.avatar || "/placeholder.svg"}
-                        alt={review.user.name}
+                        src={"/placeholder.svg"}
+                        alt={review.user?.name}
                         width={40}
                         height={40}
                       />
                     </div>
                     <div>
-                      <div className="font-medium">{review.user.name}</div>
+                      <div className="font-medium">{review.user?.name}</div>
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
@@ -927,8 +983,8 @@ function ReviewList({ productId }: { productId: string }) {
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="text-sm text-gray-500">{review.date}</div>
-                    {isAdmin && (
+                    <div className="text-sm text-gray-500"><div className="text-sm text-gray-500">{review.createdAt.toString()}</div></div>
+                    {isAdmin && user?.role === "ADMIN" && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -936,12 +992,14 @@ function ReviewList({ productId }: { productId: string }) {
                         onClick={() => toggleHideReview(review.id)}
                       >
                         <Info className="h-4 w-4" />
-                        <span className="sr-only">Ẩn đánh giá</span>
+                        <span className="sr-only">
+                          {review.status === "ACTIVE" ? "Ẩn đánh giá" : "Hiện đánh giá"}
+                        </span>
                       </Button>
                     )}
                   </div>
                 </div>
-                <p className="text-gray-700">{review.comment}</p>
+                <p className="text-gray-700">{review.content}</p>
               </motion.div>
             ))}
 
@@ -975,42 +1033,7 @@ function ReviewList({ productId }: { productId: string }) {
         ) : (
           <div className="text-center py-8 text-gray-500">Chưa có đánh giá nào cho sản phẩm này</div>
         )}
-
-        {isAdmin && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-medium mb-2">Đánh giá đã ẩn</h4>
-            {reviews.filter((r) => r.isHidden).length > 0 ? (
-              <div className="space-y-4">
-                {reviews
-                  .filter((r) => r.isHidden)
-                  .map((review) => (
-                    <div key={review.id} className="flex justify-between items-center p-2 bg-white rounded border">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                          <Image
-                            src={review.user.avatar || "/placeholder.svg"}
-                            alt={review.user.name}
-                            width={32}
-                            height={32}
-                          />
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">{review.user.name}</div>
-                          <div className="text-xs text-gray-500">{review.date}</div>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm" onClick={() => toggleHideReview(review.id)}>
-                        Hiện
-                      </Button>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500">Không có đánh giá nào bị ẩn</div>
-            )}
-          </div>
-        )}
       </div>
     </div>
-  )
+  );
 }

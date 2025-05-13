@@ -32,7 +32,7 @@ export async function GET(
 }
 
 // PATCH /api/admin/products/[id]
-export async function PATCH(
+export async function PUT(
     request: Request,
     { params }: { params: { id: string } }
 ) {
@@ -52,7 +52,9 @@ export async function PATCH(
                 stock: data.stock,
                 images: data.images,
                 categoryId: data.categoryId,
-                brandId: data.brandId
+                brandId: data.brandId,
+                nutritionalInfo: data.nutritionalInfo,
+                ingredients: data.ingredients
             },
             include: {
                 category: true,
