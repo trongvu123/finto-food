@@ -1,3 +1,4 @@
+import { CartItem } from "@/contexts/cart-context";
 import { OrderStatus } from "@prisma/client"
     export interface IAddressResponse<T> {
         data: T[]; // Mảng dữ liệu (tỉnh, quận, xã)
@@ -218,11 +219,22 @@ export const sGetAllWards = async (districtId: string): Promise<IAddressResponse
   return await res.json()
 }
 
-export  const createPayment = async (amount: number, description: string) => {
+export  const createPayment = async (
+  items: { productId: string; quantity: number }[],
+  shippingAddress: string,
+  shippingProvince: string,
+  shippingDistrict: string,
+  shippingWard: string,
+  phone: string,
+  paymentMethod: string,
+  fullName: string,
+  email: string,
+  userId?: string
+) => {
     const res = await fetch('/api/create-payment', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, description }),
+      body: JSON.stringify({ items, shippingAddress, shippingProvince, shippingDistrict, shippingWard, phone, paymentMethod, fullName, email, userId }),
     });
 
     return await res.json();

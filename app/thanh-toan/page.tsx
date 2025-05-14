@@ -58,15 +58,23 @@ export default function PaymentPage() {
 
     fetchProvinces();
   }, []);
-  useEffect(() => {
-    const init = async () => {
-      if (total > 0) {
-        const createQrCode = await createPayment(total, "Thanh toán đơn hàng");
+
+    const createPaymentLink = async () => {
+        
+        const createQrCode = await createPayment( 
+        items.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        })),
+        shippingInfo.address, shippingInfo.province, shippingInfo.district, shippingInfo.ward, shippingInfo.phone, shippingInfo.paymentMethod, shippingInfo.name, shippingInfo.email);
+        if(createQrCode.checkoutUrl){
+          window.location.href = createQrCode.checkoutUrl
+        }
+
         setQrcode(createQrCode.checkoutUrl);
-      }
+    
     };
-    init();
-  }, [total]);
+
   useEffect(() => {
     const handleSelectProvince = async () => {
       if (!selectedProvinceId) return;
@@ -323,19 +331,18 @@ export default function PaymentPage() {
                     </div>
                   </RadioGroup>
                 </div>
+                
                 {
                   shippingInfo.paymentMethod === "cod" ? (
                     <Button type="submit" className="w-full" disabled={loading}>
                       {loading ? "Đang xử lý..." : "Đặt hàng"}
                     </Button>
                   ) : (
-                    <div onClick={() => window.open(qrcode!, "_blank", "noopener,noreferrer")}>
-                      <a href={qrcode!} target="_blank" rel="noopener noreferrer" className="pointer-events-none">
-                        <Button type="button" className="w-full" disabled={loading}>
+                    
+                        <Button onClick={createPaymentLink} type="button" className="w-full" disabled={loading}>
                           {loading ? "Đang xử lý..." : "Đặt hàng"}
                         </Button>
-                      </a>
-                    </div>
+                      
 
                   )
                 }

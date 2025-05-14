@@ -149,8 +149,9 @@ export default function OrdersPage() {
       setOrders(data.orders)
       setTotalPages(data.totalPages)
       setTotalOrders(data.total)
-    } catch (error) {
+    } catch (error: any) {
       setError("Failed to load orders")
+      console.error("Failed to fetch orders:", error);
       toast({
         title: "Lỗi",
         description: "Không thể tải danh sách đơn hàng",
