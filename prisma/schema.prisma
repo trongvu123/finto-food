@@ -72,7 +72,8 @@ model Order {
   id               String      @id @default(cuid())
   userId           String?
   fullName         String?
-  orderCode        String?
+  orderCode        String?      @unique
+  paid             Boolean    @default(false)
   status           OrderStatus @default(PENDING)
   total            Float
   shippingAddress  String

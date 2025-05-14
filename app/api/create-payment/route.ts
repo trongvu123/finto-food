@@ -65,9 +65,8 @@ export async function POST(req: Request) {
       orderCode: Number(order.orderCode),
       amount,
       description,
-      returnUrl: '/thanh-toan/xac-nhan',
+      returnUrl: 'http://localhost:3000/thanh-toan/xac-nhan',
       cancelUrl: '/thanh-toan/xac-nhan',
-      webhookUrl: 'https://your-site.vercel.app/api/payment/webhook',
     };
 
     const response = await payos.createPaymentLink(paymentBody);

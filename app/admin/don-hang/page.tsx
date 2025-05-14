@@ -65,7 +65,8 @@ interface Order {
   shippingWard: string
   paymentMethod: string
   shipCode?: string
-  carrier?: string
+  carrier?: string,
+  paid: boolean,
   items: {
     quantity: number
     price: number
@@ -264,33 +265,25 @@ export default function OrdersPage() {
     setSelectedOrder(order)
   }
 
- const getStatusBadge = (status: OrderStatus | undefined) => {
-    if (!status) {
-      console.error("Invalid order status: undefined");
+  const getStatusBadge = (status: OrderStatus | undefined) => {
+    const safeStatus: OrderStatus = status || "PENDING";
+
+    if (!statusConfig[safeStatus]) {
+      console.error(`Invalid order status: ${safeStatus}`);
       return (
         <Badge className="bg-gray-100 text-gray-800 flex items-center gap-1 font-medium">
           <AlertCircle className="h-4 w-4" />
-          <span>Undefined</span>
+          <span>{safeStatus}</span>
         </Badge>
       );
     }
 
-    const config = statusConfig[status];
-
-    if (!config) {
-      console.error(`Invalid order status: ${status}`);
-      return (
-        <Badge className="bg-gray-100 text-gray-800 flex items-center gap-1 font-medium">
-          <AlertCircle className="h-4 w-4" />
-          <span>{status}</span>
-        </Badge>
-      );
-    }
+    const config = statusConfig[safeStatus];
 
     return (
       <Badge className={`${config.color} flex items-center gap-1 font-medium`}>
         {config.icon}
-        <span>{statusMap[status]}</span>
+        <span>{statusMap[safeStatus]}</span>
       </Badge>
     );
   }
@@ -538,7 +531,7 @@ export default function OrdersPage() {
                                   <SelectValue placeholder="Cập nhật" />
                                 )}
                               </SelectTrigger>
-                             <SelectContent>
+                              <SelectContent>
                                 {Object.entries(statusMap).map(([value, label]) => (
                                   <SelectItem key={value} value={value} disabled={value === (order.status || "PENDING")}>
                                     <div className="flex items-center gap-2">
@@ -632,11 +625,19 @@ export default function OrdersPage() {
                         <div className="flex items-start gap-2">
                           <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5" />
                           <div>
-                            <p className="font-medium">{selectedOrder?.paymentMethod}</p>
+                            <p className="font-medium">{selectedOrder?.paymentMethod} &nbsp;
+                              {selectedOrder?.paymentMethod === "banking" && selectedOrder?.paid === true ?
+                                <Badge variant="outline">Đã thanh toán</Badge>
+                                :
+                                <Badge variant="outline">Chưa thanh toán</Badge>
+
+                              }
+
+                            </p>
                             <p className="text-sm text-muted-foreground">Phương thức thanh toán</p>
                           </div>
                         </div>
-                       <div className="flex items-start gap-2">
+                        <div className="flex items-start gap-2">
                           <Package className="h-4 w-4 text-muted-foreground mt-0.5" />
                           <div>
                             <span className="font-medium">{getStatusBadge(selectedOrder ? selectedOrder.status : "PENDING")}</span>
@@ -748,7 +749,7 @@ export default function OrdersPage() {
 
                       <div>
                         <Label className="text-sm text-muted-foreground">Trạng thái</Label>
-                        <div className="font-medium mt-1">{getStatusBadge(selectedOrder?.status as OrderStatus)}</div>
+                        <div className="font-medium mt-1">{getStatusBadge(selectedOrder?.status || "PENDING")}</div>
                       </div>
 
                       {selectedOrder?.status === "SHIPPED" && (!selectedOrder.shipCode || !selectedOrder.carrier) && (

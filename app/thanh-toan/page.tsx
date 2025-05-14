@@ -60,13 +60,21 @@ export default function PaymentPage() {
   }, []);
 
     const createPaymentLink = async () => {
-        
+                    const province = addressResponse?.data.find(
+                p => String(p.id) === String(shippingInfo.province)
+            )?.full_name || '';
+            const district = districtsResponse?.data.find(
+                d => String(d.id) === String(shippingInfo.district)
+            )?.full_name || '';
+            const ward = wardsResponse?.data.find(
+                w => String(w.id) === String(shippingInfo.ward)
+            )?.full_name || '';
         const createQrCode = await createPayment( 
         items.map(item => ({
           productId: item.id,
           quantity: item.quantity
         })),
-        shippingInfo.address, shippingInfo.province, shippingInfo.district, shippingInfo.ward, shippingInfo.phone, shippingInfo.paymentMethod, shippingInfo.name, shippingInfo.email);
+        shippingInfo.address, province, district, ward, shippingInfo.phone, shippingInfo.paymentMethod, shippingInfo.name, shippingInfo.email, user?.id);
         if(createQrCode.checkoutUrl){
           window.location.href = createQrCode.checkoutUrl
         }
