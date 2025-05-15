@@ -336,3 +336,17 @@ export const checkProductPurchase = async (productId: string, userId: string): P
     if (!res.ok) throw new Error("Failed to check product purchase");
     return res.json();
 };
+
+// Category APIs
+export const getCategories = async () => {
+    const res = await fetch("/api/categories");
+    if (!res.ok) throw new Error("Failed to fetch categories");
+    return res.json();
+};
+
+// Brand APIs
+export const getBrands = async () => {
+    const res = await fetch("/api/brands");
+    if (!res.ok) throw new Error("Failed to fetch brands");
+    return res.json();
+};

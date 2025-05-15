@@ -47,6 +47,9 @@ export async function POST(
                     data: {
                         stock: {
                             increment: item.quantity
+                        },
+                        sold: {
+                            decrement: item.quantity
                         }
                     }
                 })

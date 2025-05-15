@@ -126,7 +126,8 @@ export default function OrdersPage() {
   const [shipInfo, setShipInfo] = useState({ shipCode: "", carrier: "" })
   const [isUpdating, setIsUpdating] = useState(false)
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
-
+  const [shipCode, setShipCode] = useState("")
+  const [carrier, setCarrier] = useState("")
   useEffect(() => {
     fetchOrders()
   }, [page, status, search, limit])
@@ -228,7 +229,8 @@ export default function OrdersPage() {
       if (!response.ok) {
         throw new Error("Failed to update shipping information")
       }
-
+      setShipCode(shipInfo.shipCode)
+      setCarrier(shipInfo.carrier)
       toast({
         title: "Thành công",
         description: "Đã cập nhật thông tin vận chuyển",

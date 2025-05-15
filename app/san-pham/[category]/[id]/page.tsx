@@ -122,15 +122,18 @@ export default function ProductDetailPage({
   const [loading, setLoading] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isWishlisted, setIsWishlisted] = useState(false)
-
+  const [rating, setRating] = useState(0)
+  const [reviews, setReviews] = useState<Review[]>([]);
   const user = useAppStore((state) => state.user)
-  const rating = 4.5
-  const reviewCount = 124
+
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(`/api/products/${id}`)
+        const fetchedReviews = await getReviews(id);
+        setRating(fetchedReviews.reduce((total: number, review:any) => total + review.rating, 0) / fetchedReviews.length);
+        setReviews(fetchedReviews);
         if (!response.ok) {
           throw new Error("Failed to fetch product")
         }
@@ -370,7 +373,7 @@ export default function ProductDetailPage({
                 ))}
               </div>
               <span className="text-sm text-gray-500">
-                {rating} ({reviewCount} đánh giá)
+                {rating} ({reviews.length} đánh giá)
               </span>
               <span className="text-sm text-gray-500">Đã bán: {product.sold}</span>
             </div>
@@ -510,7 +513,7 @@ export default function ProductDetailPage({
               value="reviews"
               className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent h-12"
             >
-              Đánh giá ({reviewCount})
+              Đánh giá ({reviews.length})
             </TabsTrigger>
             <TabsTrigger
               value="shipping"
@@ -586,7 +589,7 @@ export default function ProductDetailPage({
                         />
                       ))}
                     </div>
-                    <div className="text-sm text-gray-500 mb-4">{reviewCount} đánh giá</div>
+                    <div className="text-sm text-gray-500 mb-4">{reviews.length} đánh giá</div>
                     <ReviewForm productId={id} />
                   </div>
                 </div>

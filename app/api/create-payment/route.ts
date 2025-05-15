@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import PayOS from "@payos/node";
 import prisma from '@/lib/prisma';
 import { OrderStatus } from '@prisma/client';
-
+import dayjs from 'dayjs';
 const payos = new PayOS(
   process.env.Client_ID_PAYOS!,
   process.env.API_key_PAYPOS!,
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
       total,
       orderCode: Date.now().toString(),
       status: OrderStatus.PENDING,
+      expireBankingAt:dayjs().add(5, 'minute').toDate(),
       shippingAddress,
       shippingProvince,
       shippingDistrict,

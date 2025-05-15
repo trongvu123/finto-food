@@ -82,6 +82,21 @@ export async function POST(req: NextRequest) {
                 }
             }
         })
+        for (const item of order.items) {
+            await prisma.product.update({
+                where: {
+                    id: item.productId
+                },
+                data: {
+                    stock: {
+                        decrement: item.quantity
+                    },
+                    sold: {
+                        increment: item.quantity
+                    }
+                }
+            })
+        }
 
         return NextResponse.json(order)
     } catch (error) {

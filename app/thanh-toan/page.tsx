@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/contexts/cart-context"
 import { createOrder, createPayment, IAddressResponse, IDistrict, IProvince, IWard, sGetAllDistricts, sGetAllProvinces, sGetAllWards } from "@/lib/api"
-import { toast } from "sonner"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAppStore } from "@/components/app-provider"
 import { QRCodeSVG } from 'qrcode.react';
+import { useToast } from "@/hooks/use-toast"
+
 
 
 export default function PaymentPage() {
@@ -31,6 +33,7 @@ export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod")
   const qrSvg = useRef<HTMLDivElement>(null)
   const user = useAppStore((state) => state.user)
+  const {toast} = useToast() 
   console.log("user dat hang", user)
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
@@ -148,21 +151,18 @@ export default function PaymentPage() {
         email: shippingInfo.email,
         userId: user?.id
       })
-      await fetch('/api/products/update-stock', {
-        method: 'POST',
-        body: JSON.stringify({
-          items: items.map(item => ({
-            productId: item.id,
-            quantity: item.quantity
-          })),
-          action: 'decrease'
-        })
+
+      toast({
+        title: "Thanh toán thành công",
+        duration: 2000,
       })
-      toast.success("Đặt hàng thành công!")
       clearCart()
       router.push("/thanh-toan/xac-nhan")
     } catch (error) {
-      toast.error("Có lỗi xảy ra khi đặt hàng")
+      toast({
+        title: "Thanh thất bại",
+        duration: 2000,
+      })
     } finally {
       setLoading(false)
     }

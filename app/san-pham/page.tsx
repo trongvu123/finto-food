@@ -1,9 +1,19 @@
 "use client"
 
+import { getCategories, getBrands, getProducts } from "@/lib/api";
 import ProductList from "@/components/product-list"
 import { useEffect, useState } from "react"
-import { getProducts } from "@/lib/api"
 import { Button } from "@/components/ui/button"
+
+interface Category {
+    id: string;
+    name: string;
+}
+
+interface Brand {
+    id: string;
+    name: string;
+}
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -23,21 +33,21 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { useMobile } from "@/hooks/use-mobile"
 // Dữ liệu mẫu cho danh mục và thương hiệu
-const sampleCategories = [
-    { id: "cat1", name: "Thức ăn cho chó" },
-    { id: "cat2", name: "Thức ăn cho mèo" },
-    { id: "cat3", name: "Phụ kiện cho chó" },
-    { id: "cat4", name: "Phụ kiện cho mèo" },
-    { id: "cat5", name: "Đồ chơi" },
-]
+// const sampleCategories = [
+//     { id: "cat1", name: "Thức ăn cho chó" },
+//     { id: "cat2", name: "Thức ăn cho mèo" },
+//     { id: "cat3", name: "Phụ kiện cho chó" },
+//     { id: "cat4", name: "Phụ kiện cho mèo" },
+//     { id: "cat5", name: "Đồ chơi" },
+// ]
 
-const sampleBrands = [
-    { id: "brand1", name: "Royal Canin" },
-    { id: "brand2", name: "Pedigree" },
-    { id: "brand3", name: "Whiskas" },
-    { id: "brand4", name: "Purina" },
-    { id: "brand5", name: "Hill's" },
-]
+// const sampleBrands = [
+//     { id: "brand1", name: "Royal Canin" },
+//     { id: "brand2", name: "Pedigree" },
+//     { id: "brand3", name: "Whiskas" },
+//     { id: "brand4", name: "Purina" },
+//     { id: "brand5", name: "Hill's" },
+// ]
 
 export default function ProductsPage() {
     const isMobile = useMobile()
@@ -48,6 +58,8 @@ export default function ProductsPage() {
     const [filterOpen, setFilterOpen] = useState(false)
     const [activeFilters, setActiveFilters] = useState<string[]>([])
     const [priceRange, setPriceRange] = useState([0, 5000000])
+    const [categories, setCategories] = useState<Category[]>([])
+    const [brands, setBrands] = useState<Brand[]>([])
 
     const [filters, setFilters] = useState({
         categoryId: "",
@@ -65,7 +77,7 @@ export default function ProductsPage() {
             try {
                 setLoading(true)
                 const data = await getProducts(filters)
-                setProducts(data.products || [])
+                setProducts(data?.products || [])
             } catch (err) {
                 setError("Không thể tải sản phẩm")
                 console.error(err)
@@ -78,16 +90,32 @@ export default function ProductsPage() {
     }, [filters])
 
     useEffect(() => {
+        const fetchCategoriesAndBrands = async () => {
+            try {
+                const categoriesData = await getCategories()
+                setCategories(categoriesData)
+
+                const brandsData = await getBrands()
+                setBrands(brandsData)
+            } catch (error) {
+                console.error("Error fetching categories and brands:", error)
+            }
+        }
+
+        fetchCategoriesAndBrands()
+    }, [])
+
+    useEffect(() => {
         // Cập nhật active filters dựa trên các bộ lọc đã chọn
         const newActiveFilters: string[] = []
 
         if (filters.categoryId) {
-            const category = sampleCategories.find((c) => c.id === filters.categoryId)
+            const category = categories.find((c: any) => c.id === filters.categoryId)
             if (category) newActiveFilters.push(`Danh mục: ${category.name}`)
         }
 
         if (filters.brandId) {
-            const brand = sampleBrands.find((b) => b.id === filters.brandId)
+            const brand = brands.find((b: any) => b.id === filters.brandId)
             if (brand) newActiveFilters.push(`Thương hiệu: ${brand.name}`)
         }
 
@@ -104,7 +132,7 @@ export default function ProductsPage() {
         }
 
         setActiveFilters(newActiveFilters)
-    }, [filters])
+    }, [filters, categories, brands])
 
     const handleFilterChange = (key: string, value: any) => {
         setFilters((prev) => ({ ...prev, [key]: value }))
@@ -175,7 +203,7 @@ export default function ProductsPage() {
             <div>
                 <h3 className="mb-4 text-lg font-semibold">Danh mục</h3>
                 <div className="space-y-2">
-                    {sampleCategories.map((category) => (
+                    {categories.map((category: any) => (
                         <div key={category.id} className="flex items-center space-x-2">
                             <Checkbox
                                 id={`category-${category.id}`}
@@ -193,7 +221,7 @@ export default function ProductsPage() {
             <div className="border-t pt-6">
                 <h3 className="mb-4 text-lg font-semibold">Thương hiệu</h3>
                 <div className="space-y-2">
-                    {sampleBrands.map((brand) => (
+                    {brands.map((brand: any) => (
                         <div key={brand.id} className="flex items-center space-x-2">
                             <Checkbox
                                 id={`brand-${brand.id}`}
