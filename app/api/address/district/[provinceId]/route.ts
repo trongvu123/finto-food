@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request, { params }: { params: { provinceId: string } }) {
     try {
-        console.log('provinceId:', params.provinceId);
-        const provinceIdNumber = Number(params.provinceId);
+        const resolvedParams = await params;
+        const provinceIdNumber = Number(resolvedParams.provinceId);
         // Định dạng provinceId với số 0 ở đầu nếu < 10
         const formattedProvinceId = String(provinceIdNumber).padStart(2, '0');
         const response = await getAllDistricts(formattedProvinceId);

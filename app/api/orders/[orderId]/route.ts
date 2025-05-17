@@ -32,3 +32,48 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     return new NextResponse("Internal error", { status: 500 });
   }
 }
+
+export async function GET(request: Request, { params }: { params: Params }) {
+  try {
+    const resolveParams = await params;
+    const orderId = resolveParams.orderId;
+    const order = await prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        paymentMethod: true,
+        phone: true,
+        shippingAddress: true,
+        shippingDistrict: true,
+        shippingProvince: true,
+        shippingWard: true,
+        total: true,
+        createdAt: true,
+        items: {
+          select: {
+            product: {
+              select: {
+                name: true,
+                images: true,
+                price: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!order) {
+      return new NextResponse("Order not found", { status: 404 });
+    }
+
+    return NextResponse.json(order);
+  } catch (error) {
+    console.error("[ORDER_GET]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}

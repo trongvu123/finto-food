@@ -120,10 +120,10 @@ export default function CategoriesPage() {
     return (
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-2xl font-bold">Categories</h1>
+                <h1 className="text-2xl font-bold">Danh mục</h1>
                 <div className="flex gap-4">
                     <Input
-                        placeholder="Search categories..."
+                        placeholder="Tìm thương hiệu..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="w-64"
@@ -138,7 +138,7 @@ export default function CategoriesPage() {
                                 })
                             }}>
                                 <Plus className="w-4 h-4 mr-2" />
-                                Add Category
+                                Thêm danh mục
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
@@ -149,7 +149,7 @@ export default function CategoriesPage() {
                             </DialogHeader>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">Tên danh mục</Label>
                                     <Input
                                         id="name"
                                         value={formData.name}
@@ -160,7 +160,7 @@ export default function CategoriesPage() {
                                     />
                                 </div>
                                 <div>
-                                    <Label htmlFor="description">Description</Label>
+                                    <Label htmlFor="description">Mô tả</Label>
                                     <Input
                                         id="description"
                                         value={formData.description}
@@ -182,9 +182,9 @@ export default function CategoriesPage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead>Tên</TableHead>
+                            <TableHead>Mô tả</TableHead>
+                            <TableHead className="text-right">Thao tác</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

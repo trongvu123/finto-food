@@ -33,7 +33,8 @@ export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod")
   const qrSvg = useRef<HTMLDivElement>(null)
   const user = useAppStore((state) => state.user)
-  const {toast} = useToast() 
+  const cart = useCart()
+  const { toast } = useToast()
   console.log("user dat hang", user)
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
@@ -62,29 +63,40 @@ export default function PaymentPage() {
     fetchProvinces();
   }, []);
 
-    const createPaymentLink = async () => {
-                    const province = addressResponse?.data.find(
-                p => String(p.id) === String(shippingInfo.province)
-            )?.full_name || '';
-            const district = districtsResponse?.data.find(
-                d => String(d.id) === String(shippingInfo.district)
-            )?.full_name || '';
-            const ward = wardsResponse?.data.find(
-                w => String(w.id) === String(shippingInfo.ward)
-            )?.full_name || '';
-        const createQrCode = await createPayment( 
+  const createPaymentLink = async () => {
+
+    setLoading(true)
+    try {
+      const province = addressResponse?.data.find(
+        p => String(p.id) === String(shippingInfo.province)
+      )?.full_name || '';
+      const district = districtsResponse?.data.find(
+        d => String(d.id) === String(shippingInfo.district)
+      )?.full_name || '';
+      const ward = wardsResponse?.data.find(
+        w => String(w.id) === String(shippingInfo.ward)
+      )?.full_name || '';
+      const createQrCode = await createPayment(
         items.map(item => ({
           productId: item.id,
           quantity: item.quantity
         })),
         shippingInfo.address, province, district, ward, shippingInfo.phone, shippingInfo.paymentMethod, shippingInfo.name, shippingInfo.email, user?.id);
-        if(createQrCode.checkoutUrl){
-          window.location.href = createQrCode.checkoutUrl
-        }
 
-        setQrcode(createQrCode.checkoutUrl);
-    
-    };
+      items.map(item => {
+        cart.removeFromCart(item.id)
+      })
+      if (createQrCode.checkoutUrl) {
+        window.location.href = createQrCode.checkoutUrl
+      }
+
+      setQrcode(createQrCode.checkoutUrl);
+    } catch (error) {
+
+    } finally {
+      setLoading(false)
+    }
+  };
 
   useEffect(() => {
     const handleSelectProvince = async () => {
@@ -126,17 +138,17 @@ export default function PaymentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-            const province = addressResponse?.data.find(
-                p => String(p.id) === String(shippingInfo.province)
-            )?.full_name || '';
-            const district = districtsResponse?.data.find(
-                d => String(d.id) === String(shippingInfo.district)
-            )?.full_name || '';
-            const ward = wardsResponse?.data.find(
-                w => String(w.id) === String(shippingInfo.ward)
-            )?.full_name || '';
+    const province = addressResponse?.data.find(
+      p => String(p.id) === String(shippingInfo.province)
+    )?.full_name || '';
+    const district = districtsResponse?.data.find(
+      d => String(d.id) === String(shippingInfo.district)
+    )?.full_name || '';
+    const ward = wardsResponse?.data.find(
+      w => String(w.id) === String(shippingInfo.ward)
+    )?.full_name || '';
     try {
-      await createOrder({
+      const res = await createOrder({
         items: items.map(item => ({
           productId: item.id,
           quantity: item.quantity
@@ -151,13 +163,15 @@ export default function PaymentPage() {
         email: shippingInfo.email,
         userId: user?.id
       })
-
+      items.map(item => {
+        cart.removeFromCart(item.id)
+      })
       toast({
         title: "Thanh toán thành công",
         duration: 2000,
       })
       clearCart()
-      router.push("/thanh-toan/xac-nhan")
+      router.push("/thanh-toan/xac-nhan?code=" + res.id)
     } catch (error) {
       toast({
         title: "Thanh thất bại",
@@ -339,18 +353,18 @@ export default function PaymentPage() {
                     </div>
                   </RadioGroup>
                 </div>
-                
+
                 {
                   shippingInfo.paymentMethod === "cod" ? (
                     <Button type="submit" className="w-full" disabled={loading}>
                       {loading ? "Đang xử lý..." : "Đặt hàng"}
                     </Button>
                   ) : (
-                    
-                        <Button onClick={createPaymentLink} type="button" className="w-full" disabled={loading}>
-                          {loading ? "Đang xử lý..." : "Đặt hàng"}
-                        </Button>
-                      
+
+                    <Button onClick={createPaymentLink} type="button" className="w-full" disabled={loading}>
+                      {loading ? "Đang xử lý..." : "Đặt hàng"}
+                    </Button>
+
 
                   )
                 }

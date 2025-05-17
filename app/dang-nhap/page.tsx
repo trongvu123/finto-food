@@ -88,10 +88,10 @@ export default function LoginPage() {
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="w-full max-w-md">
-          <motion.div variants={itemVariants} className="mb-8 text-center">
+          <motion.div variants={itemVariants} className="mb-2 text-center">
             <Link href="/" className="inline-block">
               <Image
-                src="/placeholder.svg?height=60&width=180"
+                src="/logo-finto.png"
                 alt="Finto Logo"
                 width={180}
                 height={60}

@@ -16,6 +16,9 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Finto - Thức ăn thú cưng chất lượng cao",
   description: "Cửa hàng thức ăn thú cưng chất lượng cao dành cho chó và mèo",
+  icons: {
+    icon: '/favicon-v1.ico',
+  },
 }
 
 export default function RootLayout({

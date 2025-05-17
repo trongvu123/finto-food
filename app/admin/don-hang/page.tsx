@@ -128,6 +128,7 @@ export default function OrdersPage() {
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
   const [shipCode, setShipCode] = useState("")
   const [carrier, setCarrier] = useState("")
+  console.log('page', page)
   useEffect(() => {
     fetchOrders()
   }, [page, status, search, limit])
@@ -149,7 +150,7 @@ export default function OrdersPage() {
 
       const data = await response.json()
       setOrders(data.orders)
-      setTotalPages(data.totalPages)
+      setTotalPages(data.pages)
       setTotalOrders(data.total)
     } catch (error: any) {
       setError("Failed to load orders")
@@ -313,11 +314,8 @@ export default function OrdersPage() {
           <span className="font-medium">{totalOrders}</span> đơn hàng
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="icon" onClick={() => handlePageChange(1)} disabled={page === 1}>
-            <ChevronLeft className="h-4 w-4" />
-            <ChevronLeft className="h-4 w-4 -ml-2" />
-          </Button>
+        <div className="flex items-center space-x-2 ">
+
           <Button variant="outline" size="icon" onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -341,7 +339,7 @@ export default function OrdersPage() {
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             onClick={() => handlePageChange(totalPages)}
@@ -349,7 +347,7 @@ export default function OrdersPage() {
           >
             <ChevronRight className="h-4 w-4" />
             <ChevronRight className="h-4 w-4 -ml-2" />
-          </Button>
+          </Button> */}
         </div>
       </div>
     )

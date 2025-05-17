@@ -3,7 +3,6 @@ import { isValidData } from "@/lib/utils"
 
 export async function POST(req: Request) {
     const body = await req.json()
-    console.log("body", body)
     if (body.code === '00') {
         const result = await prisma.order.update({
             where: {
@@ -31,6 +30,9 @@ export async function POST(req: Request) {
                         stock: {
                             decrement: item.quantity,
                         },
+                        sold: {
+                            increment: item.quantity,
+                        }
                     },
                 });
             } catch (error) {

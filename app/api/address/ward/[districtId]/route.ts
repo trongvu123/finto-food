@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request, { params }: { params: { districtId: string } }) {
     try {
-        const districtIdNumber = Number(params.districtId);
+        const resolvedParams = await params;
+        const districtIdNumber = Number(resolvedParams.districtId);
         const formattedDistrictId = String(districtIdNumber).padStart(3, '0');
         const response = await getAllWards((formattedDistrictId));
         return NextResponse.json(response);

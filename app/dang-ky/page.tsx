@@ -14,11 +14,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { register } from "@/lib/api"
-import { toast } from "sonner"
-import { Eye, EyeOff, User, Mail, Lock, CheckCircle2, AlertCircle, ArrowRight, Facebook, Github } from 'lucide-react'
+import { Eye, EyeOff, User, Mail, Lock, CheckCircle2, AlertCircle, ArrowRight, Facebook, Github, Cat } from 'lucide-react'
+import { useToast } from "@/hooks/use-toast"
+
 
 export default function RegisterPage() {
     const router = useRouter()
+    const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const [mounted, setMounted] = useState(false)
     const [formData, setFormData] = useState({
@@ -96,18 +98,31 @@ export default function RegisterPage() {
         if (validateForm()) {
             try {
                 setLoading(true)
-                await register({
+                const res = await register({
                     name: formData.name,
                     email: formData.email,
                     password: formData.password
                 })
-                toast.success("Đăng ký thành công!", {
-                    description: "Chúng tôi đã gửi email xác nhận đến địa chỉ email của bạn."
-                })
-                router.push("/dang-nhap")
+                console.log('res', res)
+                if (!res.error) {
+
+                    toast({
+                        title: "Đăng ký thành công",
+                        duration: 3000
+                    })
+                    router.push("/dang-nhap")
+                } else {
+                    toast({
+                        title: "Đăng ký thất bại",
+                        duration: 3000,
+                        variant: "destructive"
+                    })
+                }
             } catch (error) {
-                toast.error("Đăng ký thất bại", {
-                    description: "Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại sau."
+                toast({
+                    title: "Đăng ký thất bại",
+                    duration: 3000,
+                    variant: "destructive"
                 })
                 console.error(error)
             } finally {
@@ -155,24 +170,7 @@ export default function RegisterPage() {
         <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10">
             <div className="container relative flex min-h-screen flex-col items-center justify-center py-10">
                 {/* Background decoration */}
-                <div className="absolute inset-0 -z-10 overflow-hidden">
-                    <div className="absolute left-0 top-0 h-32 w-32 animate-float opacity-10">
-                        <Image
-                            src="/paw-print.svg"
-                            alt="Paw print"
-                            width={128}
-                            height={128}
-                        />
-                    </div>
-                    <div className="absolute bottom-0 right-0 h-32 w-32 animate-float-delayed opacity-10">
-                        <Image
-                            src="/paw-print.svg"
-                            alt="Paw print"
-                            width={128}
-                            height={128}
-                        />
-                    </div>
-                </div>
+
 
                 <div className="grid w-full max-w-[1000px] grid-cols-1 gap-8 lg:grid-cols-5">
                     {/* Left side - Illustration (hidden on mobile) */}
@@ -187,7 +185,8 @@ export default function RegisterPage() {
                                 src="https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg"
                                 alt="Pet illustration"
                                 fill
-                                className="object-contain"
+                                className="rounded-md object-cover"
+
                             />
                         </div>
                         <div className="mt-8 space-y-4 text-center">
@@ -195,11 +194,7 @@ export default function RegisterPage() {
                             <p className="text-muted-foreground">
                                 Nơi cung cấp những sản phẩm tốt nhất cho thú cưng của bạn
                             </p>
-                            <div className="flex justify-center space-x-2">
-                                <span className="h-2 w-2 rounded-full bg-primary"></span>
-                                <span className="h-2 w-2 rounded-full bg-primary/60"></span>
-                                <span className="h-2 w-2 rounded-full bg-primary/30"></span>
-                            </div>
+
                         </div>
                     </motion.div>
 
@@ -214,16 +209,18 @@ export default function RegisterPage() {
                             <CardHeader className="space-y-1">
                                 <div className="flex justify-center">
                                     <motion.div
-                                        className="relative h-20 w-20"
+                                        className="relative"
                                         initial={{ scale: 0.8 }}
                                         animate={{ scale: 1 }}
                                         transition={{ duration: 0.3, delay: 0.4 }}
                                     >
                                         <Image
-                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds.jpg/1024px-Dog_Breeds.jpg"
+                                            src="/logo-finto.png"
                                             alt="Pet Logo"
-                                            fill
+
                                             className="object-contain"
+                                            width={120}
+                                            height={120}
                                         />
                                     </motion.div>
                                 </div>
@@ -595,12 +592,7 @@ export default function RegisterPage() {
                             }
                         }}
                     >
-                        <Image
-                            src="/dog-playing.svg"
-                            alt="Dog"
-                            fill
-                            className="object-contain"
-                        />
+                        <Cat />
                     </motion.div>
                 </div>
             </div>

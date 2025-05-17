@@ -350,3 +350,9 @@ export const getBrands = async () => {
     if (!res.ok) throw new Error("Failed to fetch brands");
     return res.json();
 };
+
+export const getInvoice = async (id: string) => {
+    const res = await fetch(`/api/orders/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch invoice");
+    return res.json();
+};

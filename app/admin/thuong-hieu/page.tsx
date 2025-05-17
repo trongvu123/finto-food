@@ -124,10 +124,10 @@ export default function BrandsPage() {
     return (
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-2xl font-bold">Brands</h1>
+                <h1 className="text-2xl font-bold">Thương hiệu</h1>
                 <div className="flex gap-4">
                     <Input
-                        placeholder="Search brands..."
+                        placeholder="Tìm thương hiệu..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="w-64"
@@ -143,7 +143,7 @@ export default function BrandsPage() {
                                 })
                             }}>
                                 <Plus className="w-4 h-4 mr-2" />
-                                Add Brand
+                                Thêm thương hiệu
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
@@ -154,7 +154,7 @@ export default function BrandsPage() {
                             </DialogHeader>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">Tên</Label>
                                     <Input
                                         id="name"
                                         value={formData.name}
@@ -198,9 +198,9 @@ export default function BrandsPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Logo</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead>Tên</TableHead>
+                            <TableHead>Mô tả</TableHead>
+                            <TableHead className="text-right">Thao tác</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
