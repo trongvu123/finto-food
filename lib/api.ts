@@ -356,3 +356,9 @@ export const getInvoice = async (id: string) => {
     if (!res.ok) throw new Error("Failed to fetch invoice");
     return res.json();
 };
+
+export const checkReviewed = async (userId: string) => {
+    const res = await fetch(`/api/check-reviewed?userId=${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch invoice");
+    return res.json();
+};

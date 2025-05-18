@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             const product = products.find(p => p.id === item.productId)
             return sum + (product?.price || 0) * item.quantity
         }, 0)
-
+        total > 500000 ? total : total + 30000
         // Create order
         const orderData: any = {
             total,

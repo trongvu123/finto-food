@@ -32,23 +32,30 @@ import { Progress } from "@/components/ui/progress"
 import { use } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAppStore } from "@/components/app-provider"
-import { getReviews, updateReviewStatus, checkProductPurchase, createReview } from "@/lib/api"
+import { getReviews, updateReviewStatus, checkProductPurchase, createReview, checkReviewed } from "@/lib/api"
+import { set } from "date-fns"
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/vi'  // nếu bạn muốn dùng tiếng Việt
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+dayjs.extend(relativeTime)
+dayjs.locale('vi')  // thiết lập locale tiếng Việt
 interface Review {
-    id:        string;
-    userId:    string;
-    status:    string;
-    productId: string;
-    content:   string;
-    rating:    number;
-    createdAt: Date;
-    updatedAt: Date;
+  id: string;
+  userId: string;
+  status: string;
+  productId: string;
+  content: string;
+  rating: number;
+  createdAt: Date;
+  updatedAt: Date;
   user: {
-  id:        string;
-    name:      string;
-    email:     string;
-    password:  string;
-    role:      string;
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    role: string;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -132,7 +139,7 @@ export default function ProductDetailPage({
       try {
         const response = await fetch(`/api/products/${id}`)
         const fetchedReviews = await getReviews(id);
-        setRating(fetchedReviews.reduce((total: number, review:any) => total + review.rating, 0) / fetchedReviews.length);
+        setRating(fetchedReviews.reduce((total: number, review: any) => total + review.rating, 0) / fetchedReviews.length);
         setReviews(fetchedReviews);
         if (!response.ok) {
           throw new Error("Failed to fetch product")
@@ -373,7 +380,7 @@ export default function ProductDetailPage({
                 ))}
               </div>
               <span className="text-sm text-gray-500">
-                {rating} ({reviews.length} đánh giá)
+                {rating > 0 ? `${rating.toFixed(1)}` : ""} ({reviews.length} đánh giá)
               </span>
               <span className="text-sm text-gray-500">Đã bán: {product.sold}</span>
             </div>
@@ -575,7 +582,7 @@ export default function ProductDetailPage({
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="md:w-1/3">
                   <div className="text-center p-6 bg-gray-50 rounded-lg">
-                    <div className="text-5xl font-bold text-primary mb-2">{rating}</div>
+                    <div className="text-5xl font-bold text-primary mb-2">{rating > 0 ? rating.toFixed(1) : "0"}</div>
                     <div className="flex justify-center mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
@@ -749,6 +756,7 @@ function ReviewForm({ productId }: { productId: string }) {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasPurchased, setHasPurchased] = useState(false);
+  const [reviewed, setReviewed] = useState(false);
   const [loadingPurchaseCheck, setLoadingPurchaseCheck] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
@@ -760,7 +768,9 @@ function ReviewForm({ productId }: { productId: string }) {
         setLoadingPurchaseCheck(true);
         try {
           const purchased = await checkProductPurchase(productId, user.id);
+          const reviewed = await checkReviewed(user.id);
           setHasPurchased(purchased);
+          setReviewed(reviewed);
         } catch (error) {
           console.error("Failed to check product purchase:", error);
         } finally {
@@ -787,7 +797,7 @@ function ReviewForm({ productId }: { productId: string }) {
           content: comment,
           rating: rating,
         });
-
+        setReviewed(true);
         toast({
           title: "Thành công",
           description: "Đánh giá của bạn đã được gửi và đang chờ phê duyệt",
@@ -827,7 +837,7 @@ function ReviewForm({ productId }: { productId: string }) {
 
   return (
     <>
-      <Button onClick={handleClickReivewButton} disabled={!hasPurchased}>
+      <Button onClick={handleClickReivewButton} disabled={!hasPurchased || reviewed}>
         Viết đánh giá
       </Button>
 
@@ -965,16 +975,15 @@ function ReviewList({ productId }: { productId: string }) {
                 <div className="flex justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-                      <Image
-                        src={"/placeholder.svg"}
-                        alt={review.user?.name}
-                        width={40}
-                        height={40}
-                      />
+                      <Avatar>
+                        <AvatarImage src="https://avatar.iran.liara.run/public/15" />
+                        <AvatarFallback>{review.user?.name}</AvatarFallback>
+                      </Avatar>
                     </div>
                     <div>
                       <div className="font-medium">{review.user?.name}</div>
-                      <div className="flex">
+                      <div className="text-sm text-gray-500">{review.user?.email}</div>
+                      <div className="flex mt-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
                             key={star}
@@ -986,7 +995,7 @@ function ReviewList({ productId }: { productId: string }) {
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="text-sm text-gray-500"><div className="text-sm text-gray-500">{review.createdAt.toString()}</div></div>
+                    <div className="text-sm text-gray-500"><div className="text-sm text-gray-500">{dayjs(review.createdAt).fromNow()}</div></div>
                     {isAdmin && user?.role === "ADMIN" && (
                       <Button
                         variant="ghost"

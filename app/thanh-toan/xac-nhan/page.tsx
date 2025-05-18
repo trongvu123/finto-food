@@ -28,6 +28,7 @@ export interface Invoice {
 
 export interface Item {
   product: Product;
+  quantity: number;
 }
 
 export interface Product {

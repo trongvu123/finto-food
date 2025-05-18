@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         }
       }
     })
-    const amount = total;
+    const amount = total < 500000 ? total + 30000 : total;
     const description = order.orderCode?.toString() || '';
     const paymentBody = {
       orderCode: Number(order.orderCode),

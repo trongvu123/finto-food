@@ -192,8 +192,8 @@ const InvoiceDocument = ({ invoice }: { invoice: Invoice }) => (
                         <View key={index} style={styles.tableRow}>
                             <Text style={styles.tableCellWide}>{item.product.name}</Text>
                             <Text style={styles.tableCell}>{formatCurrency(item.product.price)}</Text>
-                            <Text style={styles.tableCell}>1</Text>
-                            <Text style={styles.tableCell}>{formatCurrency(item.product.price)}</Text>
+                            <Text style={styles.tableCell}>{item.quantity}</Text>
+                            <Text style={styles.tableCell}>{formatCurrency(item.product.price * item.quantity)}</Text>
                         </View>
                     ))}
                 </View>
@@ -203,11 +203,19 @@ const InvoiceDocument = ({ invoice }: { invoice: Invoice }) => (
                 <Text style={styles.totalLabel}>Tổng cộng:</Text>
                 <Text style={styles.totalValue}>{formatCurrency(invoice.total)}</Text>
             </View>
+            {
+                (invoice.paymentMethod === "cod" && invoice.total < 500000)  && (
+                    <View style={styles.total}>
+                        <Text style={styles.totalLabel}>Phí vận chuyển:</Text>
+                        <Text style={styles.totalValue}>{formatCurrency(30000)}</Text>
+                    </View>
+                )
+            }
 
             <View style={styles.total}>
                 <Text style={styles.totalLabel}>Cần thanh toán:</Text>
                 <Text style={styles.totalValue}>
-                    {invoice.paymentMethod.toLowerCase().includes("cod") ? formatCurrency(invoice.total) : formatCurrency(0)}
+                    {invoice.paymentMethod.toLowerCase().includes("cod") ? formatCurrency(invoice.total < 500000 ? invoice.total + 30000 : invoice.total) : formatCurrency(0)}
                 </Text>
             </View>
 

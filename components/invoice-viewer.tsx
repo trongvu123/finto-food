@@ -144,10 +144,10 @@ export function InvoiceViewer({ invoice }: { invoice: Invoice }) {
                     </div>
                     <div>
                       <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-muted-foreground">{formatCurrency(item.product.price)} x 1</p>
+                      <p className="text-sm text-muted-foreground">{formatCurrency(item.product.price)} x {item.quantity}</p>
                     </div>
                   </div>
-                  <p className="font-medium">{formatCurrency(item.product.price)}</p>
+                  <p className="font-medium">{formatCurrency(item.product.price * item.quantity)}</p>
                 </div>
               ))}
               <Separator className="my-4" />

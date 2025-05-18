@@ -520,11 +520,18 @@ export default function UserOrdersPage() {
                                         </div>
                                         <div className="flex justify-between">
                                           <span className="text-gray-600">Phí vận chuyển:</span>
-                                          <span>Miễn phí</span>
+                                          <span>
+                                            {
+                                              order.total > 500000 ?
+                                                `Miễn phí`
+                                                :
+                                                formatCurrency(30000)
+                                            }
+                                          </span>
                                         </div>
                                         <div className="flex justify-between font-bold text-lg pt-2 border-t">
                                           <span>Tổng cộng:</span>
-                                          <span className="text-primary">{formatCurrency(order.total)}</span>
+                                          <span className="text-primary">{formatCurrency(order.total + 30000)}</span>
                                         </div>
                                       </div>
                                     </TabsContent>

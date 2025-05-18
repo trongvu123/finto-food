@@ -55,6 +55,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
         createdAt: true,
         items: {
           select: {
+            quantity: true,
             product: {
               select: {
                 name: true,
