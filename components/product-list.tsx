@@ -9,6 +9,8 @@ import { Progress } from "@/components/ui/progress"
 import { motion } from "framer-motion"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
+import { getReviews } from "@/lib/api"
+import { useEffect, useState } from "react"
 
 
 // Định nghĩa kiểu dữ liệu cho sản phẩm
@@ -44,6 +46,10 @@ interface Product {
     updatedAt: string
   }
 }
+interface RatingData {
+  rating: number
+  count: number
+}
 // Format giá tiền sang VND
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -60,16 +66,11 @@ function calculateDiscount(price: number, salePrice: number | null): number {
 }
 
 // Tính rating giả
-function generateRating(id: string): { rating: number; count: number } {
-  // Sử dụng id để tạo rating ngẫu nhiên nhưng nhất quán
-  const seed = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
-  const rating = 3.5 + (seed % 20) / 10 // Rating từ 3.5 đến 5.0
-  const count = 10 + (seed % 100) // Số lượng đánh giá từ 10 đến 109
-
-  return {
-    rating: Math.min(5, Math.round(rating * 10) / 10),
-    count,
-  }
+async function fetchRating(id: string): Promise<RatingData> {
+  const reviews = await getReviews(id)
+  const count = reviews.length
+  const rating = count > 0 ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / count : 0
+  return { rating, count }
 }
 
 interface ProductListProps {
@@ -80,6 +81,16 @@ interface ProductListProps {
 export default function ProductList({ products, viewMode = "grid" }: ProductListProps) {
   const { toast } = useToast()
   const { addToCart } = useCart()
+  const [ratings, setRatings] = useState<Record<string, RatingData>>({})
+    useEffect(() => {
+    const load = async () => {
+      const entries = await Promise.all(
+        products.map(async (p) => [p.id, await fetchRating(p.id)] as const
+      ))
+      setRatings(Object.fromEntries(entries))
+    }
+    load()
+  }, [products])
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -111,9 +122,9 @@ export default function ProductList({ products, viewMode = "grid" }: ProductList
   if (viewMode === "list") {
     return (
       <motion.div className="space-y-4" variants={container} initial="hidden" animate="show">
-        {products.map((product) => {
+        {products.map( (product) => {
           const discount = calculateDiscount(product.price, product.salePrice)
-          const { rating, count } = generateRating(product.id)
+          const { rating = 0, count = 0 } = ratings[product.id] || {}
           const soldPercentage = Math.min(100, (product.sold / (product.sold + product.stock)) * 100)
 
           return (
@@ -232,9 +243,9 @@ export default function ProductList({ products, viewMode = "grid" }: ProductList
       initial="hidden"
       animate="show"
     >
-      {products.map((product) => {
+      {products.map( (product) => {
         const discount = calculateDiscount(product.price, product.salePrice)
-        const { rating, count } = generateRating(product.id)
+        const { rating = 0, count = 0 } = ratings[product.id] || {}
         const soldPercentage = Math.min(100, (product.sold / (product.sold + product.stock)) * 100)
 
         return (
