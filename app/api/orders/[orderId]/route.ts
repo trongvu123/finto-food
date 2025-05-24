@@ -23,6 +23,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
         status: status,
         shipCode: shipCode,
         carrier: carrier,
+        websiteCarrier: body.websiteCarrier
       },
     });
 

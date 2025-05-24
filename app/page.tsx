@@ -18,11 +18,21 @@ export default function Home() {
   const { scrollY } = useScroll()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: false, amount: 0.1 })
-
+  const [products, setProducts] = useState([])
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products/top-products").then((res) => res.json())
+        setProducts(response)
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      }
+    }
+
+    fetchProducts()
     setIsLoaded(true)
   }, [])
-
+  console.log("Products:", products)
   return (
     <AnimatePresence>
       {isLoaded && (
@@ -37,7 +47,7 @@ export default function Home() {
           <motion.div
             ref={ref}
             initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 } }
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <IntroSection />
@@ -47,7 +57,7 @@ export default function Home() {
 
           <div className="bg-gray-50 py-16">
             <div className="container mx-auto px-4">
-              <FeaturedProducts />
+              <FeaturedProducts products={products} />
             </div>
           </div>
 

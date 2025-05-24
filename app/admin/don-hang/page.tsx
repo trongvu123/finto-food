@@ -66,6 +66,7 @@ interface Order {
   paymentMethod: string
   shipCode?: string
   carrier?: string,
+  websiteCarrier?: string
   paid: boolean,
   items: {
     quantity: number
@@ -123,7 +124,7 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("")
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [isShipInfoDialogOpen, setIsShipInfoDialogOpen] = useState(false)
-  const [shipInfo, setShipInfo] = useState({ shipCode: "", carrier: "" })
+  const [shipInfo, setShipInfo] = useState({ shipCode: "", carrier: "", website: "" })
   const [isUpdating, setIsUpdating] = useState(false)
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
   const [shipCode, setShipCode] = useState("")
@@ -173,7 +174,7 @@ export default function OrdersPage() {
     if (newStatus === "SHIPPED") {
       const order = orders.find((o) => o.id === orderId)
       if (!order?.shipCode || !order?.carrier) {
-        setShipInfo({ shipCode: order?.shipCode || "", carrier: order?.carrier || "" })
+        setShipInfo({ shipCode: order?.shipCode || "", carrier: order?.carrier || "", website: order?.websiteCarrier || "" })
         setIsShipInfoDialogOpen(true)
         setIsUpdating(false)
         return
@@ -224,6 +225,7 @@ export default function OrdersPage() {
           status: "SHIPPED",
           shipCode: shipInfo.shipCode,
           carrier: shipInfo.carrier,
+          websiteCarrier: shipInfo.website,
         }),
       })
 
@@ -232,6 +234,7 @@ export default function OrdersPage() {
       }
       setShipCode(shipInfo.shipCode)
       setCarrier(shipInfo.carrier)
+
       toast({
         title: "Thành công",
         description: "Đã cập nhật thông tin vận chuyển",
@@ -769,6 +772,7 @@ export default function OrdersPage() {
                             setShipInfo({
                               shipCode: selectedOrder.shipCode || "",
                               carrier: selectedOrder.carrier || "",
+                              website: selectedOrder.websiteCarrier || "",
                             })
                             setIsShipInfoDialogOpen(true)
                           }}
@@ -817,6 +821,15 @@ export default function OrdersPage() {
                 value={shipInfo.carrier}
                 onChange={(e) => setShipInfo({ ...shipInfo, carrier: e.target.value })}
                 placeholder="Nhập đơn vị vận chuyển"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="carrier">Đơn vị vận chuyển</Label>
+              <Input
+                id="website"
+                value={shipInfo.website}
+                onChange={(e) => setShipInfo({ ...shipInfo, website: e.target.value })}
+                placeholder="Nhập đơn link website đơn vị vận chuyển"
               />
             </div>
           </div>

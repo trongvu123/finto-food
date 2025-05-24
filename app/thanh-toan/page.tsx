@@ -250,64 +250,64 @@ export default function PaymentPage() {
     }
   }
 
-  // if (items.length === 0) {
-  //   return (
-  //     <motion.div
-  //       initial={{ opacity: 0 }}
-  //       animate={{ opacity: 1 }}
-  //       exit={{ opacity: 0 }}
-  //       className="container mx-auto py-8"
-  //     >
-  //       <div className="text-center">
-  //         <motion.div
-  //           initial={{ scale: 0.8, opacity: 0 }}
-  //           animate={{ scale: 1, opacity: 1 }}
-  //           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-  //         >
-  //           <ShoppingBag className="mx-auto h-24 w-24 text-gray-300 mb-4" />
-  //         </motion.div>
-  //         <motion.h1
-  //           initial={{ y: 20, opacity: 0 }}
-  //           animate={{ y: 0, opacity: 1 }}
-  //           transition={{ delay: 0.1 }}
-  //           className="text-2xl font-bold mb-4"
-  //         >
-  //           Giỏ hàng trống
-  //         </motion.h1>
-  //         <motion.p
-  //           initial={{ y: 20, opacity: 0 }}
-  //           animate={{ y: 0, opacity: 1 }}
-  //           transition={{ delay: 0.2 }}
-  //           className="mb-4"
-  //         >
-  //           Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán
-  //         </motion.p>
-  //         <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
-  //           <Button onClick={() => router.push("/san-pham")} className="group">
-  //             <ShoppingBag className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-  //             Tiếp tục mua sắm
-  //           </Button>
-  //         </motion.div>
-  //       </div>
-  //     </motion.div>
-  //   )
-  // }
+  if (items.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="container mx-auto py-8"
+      >
+        <div className="text-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <ShoppingBag className="mx-auto h-24 w-24 text-gray-300 mb-4" />
+          </motion.div>
+          <motion.h1
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-2xl font-bold mb-4"
+          >
+            Giỏ hàng trống
+          </motion.h1>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mb-4"
+          >
+            Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán
+          </motion.p>
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
+            <Button onClick={() => router.push("/san-pham")} className="group">
+              <ShoppingBag className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+              Tiếp tục mua sắm
+            </Button>
+          </motion.div>
+        </div>
+      </motion.div>
+    )
+  }
 
-  // if (!mounted) {
-  //   return (
-  //     <div className="container mx-auto py-8">
-  //       <Skeleton className="h-10 w-48 mb-8" />
-  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-  //         <div>
-  //           <Skeleton className="h-[600px] w-full rounded-lg" />
-  //         </div>
-  //         <div>
-  //           <Skeleton className="h-[400px] w-full rounded-lg" />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if (!mounted) {
+    return (
+      <div className="container mx-auto py-8">
+        <Skeleton className="h-10 w-48 mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <Skeleton className="h-[600px] w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="h-[400px] w-full rounded-lg" />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="container mx-auto py-8">

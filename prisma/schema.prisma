@@ -11,10 +11,10 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
-  name     String?
-  email    String  @unique
-  password String
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,8 +71,8 @@ model Order {
   id               String      @id @default(cuid())
   userId           String?
   fullName         String?
-  orderCode        String?      @unique
-  paid             Boolean    @default(false)
+  orderCode        String?     @unique
+  paid             Boolean     @default(false)
   status           OrderStatus @default(PENDING)
   total            Float
   shippingAddress  String
@@ -86,6 +86,7 @@ model Order {
   notes            String?
   shipCode         String?
   carrier          String?
+  websiteCarrier   String?
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
   items            OrderItem[]
@@ -98,10 +99,12 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
+
 enum ReviewStatus {
   ACTIVE
   INACTIVE
 }
+
 model OrderItem {
   id        String   @id @default(cuid())
   orderId   String
@@ -128,14 +131,14 @@ model BlogPost {
 }
 
 model Review {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   userId    String
   status    ReviewStatus @default(ACTIVE)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product      @relation(fields: [productId], references: [id])
   content   String
   rating    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }

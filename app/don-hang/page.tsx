@@ -65,6 +65,7 @@ interface Order {
   email: string
   shipCode?: string
   carrier?: string
+  websiteCarrier?: string
   updatedAt?: string
   items: {
     quantity: number
@@ -579,10 +580,14 @@ export default function UserOrdersPage() {
                                                   </div>
                                                 </div>
                                                 <div className="mt-4">
-                                                  <Button variant="outline" className="w-full">
-                                                    <ExternalLink className="h-4 w-4 mr-2" />
-                                                    Theo dõi đơn hàng
-                                                  </Button>
+                                                  <a href={order?.websiteCarrier} target="_blank" rel="noopener noreferrer">
+                                                    <Button variant="outline" className="w-full">
+
+                                                      <ExternalLink className="h-4 w-4 mr-2" />
+                                                      Theo dõi đơn hàng
+                                                    </Button>
+
+                                                  </a>
                                                 </div>
                                               </div>
                                             ) : (

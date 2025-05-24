@@ -46,7 +46,7 @@ interface Product {
     updatedAt: string
   }
 }
-interface RatingData {
+export interface RatingData {
   rating: number
   count: number
 }
@@ -82,11 +82,11 @@ export default function ProductList({ products, viewMode = "grid" }: ProductList
   const { toast } = useToast()
   const { addToCart } = useCart()
   const [ratings, setRatings] = useState<Record<string, RatingData>>({})
-    useEffect(() => {
+  useEffect(() => {
     const load = async () => {
       const entries = await Promise.all(
         products.map(async (p) => [p.id, await fetchRating(p.id)] as const
-      ))
+        ))
       setRatings(Object.fromEntries(entries))
     }
     load()
@@ -122,7 +122,7 @@ export default function ProductList({ products, viewMode = "grid" }: ProductList
   if (viewMode === "list") {
     return (
       <motion.div className="space-y-4" variants={container} initial="hidden" animate="show">
-        {products.map( (product) => {
+        {products.map((product) => {
           const discount = calculateDiscount(product.price, product.salePrice)
           const { rating = 0, count = 0 } = ratings[product.id] || {}
           const soldPercentage = Math.min(100, (product.sold / (product.sold + product.stock)) * 100)
@@ -243,7 +243,7 @@ export default function ProductList({ products, viewMode = "grid" }: ProductList
       initial="hidden"
       animate="show"
     >
-      {products.map( (product) => {
+      {products.map((product) => {
         const discount = calculateDiscount(product.price, product.salePrice)
         const { rating = 0, count = 0 } = ratings[product.id] || {}
         const soldPercentage = Math.min(100, (product.sold / (product.sold + product.stock)) * 100)

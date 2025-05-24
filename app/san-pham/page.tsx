@@ -32,22 +32,6 @@ import {
 } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import { useMobile } from "@/hooks/use-mobile"
-// Dữ liệu mẫu cho danh mục và thương hiệu
-// const sampleCategories = [
-//     { id: "cat1", name: "Thức ăn cho chó" },
-//     { id: "cat2", name: "Thức ăn cho mèo" },
-//     { id: "cat3", name: "Phụ kiện cho chó" },
-//     { id: "cat4", name: "Phụ kiện cho mèo" },
-//     { id: "cat5", name: "Đồ chơi" },
-// ]
-
-// const sampleBrands = [
-//     { id: "brand1", name: "Royal Canin" },
-//     { id: "brand2", name: "Pedigree" },
-//     { id: "brand3", name: "Whiskas" },
-//     { id: "brand4", name: "Purina" },
-//     { id: "brand5", name: "Hill's" },
-// ]
 
 export default function ProductsPage() {
     const isMobile = useMobile()
