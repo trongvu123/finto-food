@@ -38,7 +38,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
   try {
     const resolveParams = await params;
     const orderId = resolveParams.orderId;
-    const order = await prisma.order.findUnique({
+    let order = await prisma.order.findUnique({
       where: {
         id: orderId,
       },
@@ -68,6 +68,40 @@ export async function GET(request: Request, { params }: { params: Params }) {
         }
       }
     });
+
+    // Nếu không tìm thấy theo ID, thử tìm theo orderCode
+    if (!order) {
+      order = await prisma.order.findUnique({
+        where: {
+          orderCode: orderId, // Sử dụng cùng param nhưng tìm theo orderCode
+        },
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+          paymentMethod: true,
+          phone: true,
+          shippingAddress: true,
+          shippingDistrict: true,
+          shippingProvince: true,
+          shippingWard: true,
+          total: true,
+          createdAt: true,
+          items: {
+            select: {
+              quantity: true,
+              product: {
+                select: {
+                  name: true,
+                  images: true,
+                  price: true
+                }
+              }
+            }
+          }
+        }
+      });
+    }
 
     if (!order) {
       return new NextResponse("Order not found", { status: 404 });

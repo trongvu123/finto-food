@@ -39,11 +39,14 @@ export interface Product {
 
 function PaymentConfirmation() {
   const code = useSearchParams().get("code")
+  const orderCode = useSearchParams().get("orderCode")
+
   const user = useAppStore((state) => state.user)
   const router = useRouter()
   const [invoice, setInvoice] = useState<Invoice | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  let id: string;
 
   useEffect(() => {
     const fetchInvoiceData = async () => {
@@ -51,10 +54,14 @@ function PaymentConfirmation() {
         setLoading(false)
         return
       }
-
+      if (code !== "00") {
+        id = code
+      } else if (orderCode) {
+        id = orderCode
+      }
       try {
         setLoading(true)
-        const invoiceData = await getInvoice(code)
+        const invoiceData = await getInvoice(id)
         setInvoice(invoiceData)
       } catch (err) {
         console.error("Error fetching invoice:", err)
@@ -65,7 +72,7 @@ function PaymentConfirmation() {
     }
 
     fetchInvoiceData()
-  }, [code])
+  }, [code, orderCode])
 
   // Hiệu ứng confetti khi trang được tải
   useEffect(() => {
@@ -125,26 +132,26 @@ function PaymentConfirmation() {
             )}
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2" 
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
                 onClick={() => router.push("/")}
               >
                 <ArrowLeft className="h-4 w-4" />
                 Quay lại trang chủ
               </Button>
-              
-              <Button 
-                className="flex items-center gap-2" 
+
+              <Button
+                className="flex items-center gap-2"
                 onClick={() => router.push("/san-pham")}
               >
                 <ShoppingBag className="h-4 w-4" />
                 Tiếp tục mua sắm
               </Button>
-              
+
               {user && (
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   onClick={() => router.push("/don-hang")}
                 >
                   Xem đơn hàng của tôi
@@ -158,7 +165,7 @@ function PaymentConfirmation() {
   )
 }
 
-export default function PaymentConfirmationPage(){
+export default function PaymentConfirmationPage() {
   return (
     <Suspense>
       <PaymentConfirmation />
