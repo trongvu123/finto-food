@@ -66,7 +66,7 @@ export async function POST(req: Request) {
       orderCode: Number(order.orderCode),
       amount,
       description,
-      returnUrl: 'https://finto-food.vercel.app/thanh-toan/xac-nhan',
+      returnUrl: `https://finto-food.vercel.app/thanh-toan/xac-nhan?code=${order.id}`,
       cancelUrl: '/thanh-toan/xac-nhan',
     };
 
