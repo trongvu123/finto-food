@@ -597,13 +597,13 @@ export default function ProductDetailPage({
                       ))}
                     </div>
                     <div className="text-sm text-gray-500 mb-4">{reviews.length} đánh giá</div>
-                    <ReviewForm productId={id} setReviews={setReviews} setRatingParent={setRating} />
+                    <ReviewForm productId={id} setReviews={setReviews} setRatingParent={setRating} reviews={reviews} />
                   </div>
                 </div>
 
                 <div className="md:w-2/3">
                   <h3 className="text-xl font-semibold mb-4">Đánh giá từ khách hàng</h3>
-                  <ReviewList productId={id} reviews={reviews} />
+                  <ReviewList productId={id} reviews={reviews} setReviews={setReviews} />
                 </div>
               </div>
             </div>
@@ -750,7 +750,13 @@ export default function ProductDetailPage({
 }
 
 // Review Form Component
-function ReviewForm({ productId, setReviews, setRatingParent }: { productId: string,setReviews : React.Dispatch<React.SetStateAction<Review[]>>, setRatingParent: React.Dispatch<React.SetStateAction<number>> }) {
+function ReviewForm({ productId, setReviews, setRatingParent, reviews }:
+  {
+    productId: string, setReviews: React.Dispatch<React.SetStateAction<Review[]>>,
+    setRatingParent: React.Dispatch<React.SetStateAction<number>>,
+    reviews: Review[]
+  }
+) {
   const [isOpen, setIsOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -898,10 +904,9 @@ function ReviewForm({ productId, setReviews, setRatingParent }: { productId: str
 }
 
 // Review List Component
-function ReviewList({ productId, reviews }: { productId: string, reviews: Review[] }) {
+function ReviewList({ productId, reviews, setReviews }: { productId: string, reviews: Review[], setReviews: React.Dispatch<React.SetStateAction<Review[]>> }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [reviewsfetched, setReviews] = useState<Review[]>(reviews);
   const [loading, setLoading] = useState(true);
   const reviewsPerPage = 3;
   const user = useAppStore((state) => state.user);
@@ -923,7 +928,7 @@ function ReviewList({ productId, reviews }: { productId: string, reviews: Review
   }, [productId]);
 
   // Tính toán số trang
-  const totalPages = Math.ceil(reviewsfetched.length / reviewsPerPage);
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
 
   // Lấy đánh giá cho trang hiện tại
   const currentReviews = reviews
@@ -933,7 +938,7 @@ function ReviewList({ productId, reviews }: { productId: string, reviews: Review
   const toggleHideReview = async (reviewId: string) => {
     try {
       // Assuming you have an API endpoint to update review status
-      const updatedReview = reviewsfetched.find((review) => review.id === reviewId);
+      const updatedReview = reviews.find((review) => review.id === reviewId);
       if (updatedReview) {
         await updateReviewStatus(reviewId, updatedReview.status === "ACTIVE" ? "INACTIVE" : "ACTIVE");
         // After successful update, refresh the reviews
@@ -957,7 +962,7 @@ function ReviewList({ productId, reviews }: { productId: string, reviews: Review
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h4 className="font-medium">Tổng cộng: {reviewsfetched.length} đánh giá</h4>
+        <h4 className="font-medium">Tổng cộng: {reviews.length} đánh giá</h4>
         {user?.role === "ADMIN" && (
           <Button variant="outline" size="sm" onClick={toggleAdminMode} className="text-xs">
             {isAdmin ? "Thoát chế độ Admin" : "Chế độ Admin"}
