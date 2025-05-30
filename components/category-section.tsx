@@ -13,21 +13,21 @@ export default function CategorySection() {
   const categories = [
     {
       title: "Sản phẩm cho chó",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wp2-t3IoVeDc2NrM18gYKUWAjpzPnZtcu5.jpeg",
+      image: "https://pet1.mauthemewp.com/wp-content/uploads/2024/10/category-03-1536x1536-1.webp",
       color: "from-amber-400 to-orange-500",
-      link: "/san-pham/cho",
+      link: "/san-pham",
     },
     {
       title: "Sản phẩm cho mèo",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wp3-dv8U2duXDvnQZMsvqGjOyvrCgKRQwl.jpeg",
+      image: "https://pet1.mauthemewp.com/wp-content/uploads/2024/10/category-02-1536x1536-1.webp",
       color: "from-purple-400 to-pink-500",
-      link: "/san-pham/meo",
+      link: "/san-pham",
     },
     {
       title: "Thiết bị thông minh",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wp4-IYyvTtrIxW75j8OXPwAOeHVsmxsrPy.jpeg",
+      image: "https://pet1.mauthemewp.com/wp-content/uploads/2024/10/category-01-1536x1536-1.webp",
       color: "from-blue-400 to-teal-500",
-      link: "/san-pham/thiet-bi",
+      link: "/san-pham",
     },
   ]
 

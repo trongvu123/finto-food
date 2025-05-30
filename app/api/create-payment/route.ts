@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       total,
       orderCode: Date.now().toString(),
       status: OrderStatus.PENDING,
-      expireBankingAt:dayjs().add(5, 'minute').toDate(),
+      expireBankingAt: dayjs().add(5, 'minute').toDate(),
       shippingAddress,
       shippingProvince,
       shippingDistrict,
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
       orderCode: Number(order.orderCode),
       amount,
       description,
-      returnUrl: 'http://localhost:3000/thanh-toan/xac-nhan',
+      returnUrl: 'https://finto-food.vercel.app/thanh-toan/xac-nhan',
       cancelUrl: '/thanh-toan/xac-nhan',
     };
 

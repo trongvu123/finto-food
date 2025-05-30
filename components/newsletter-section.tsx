@@ -39,7 +39,7 @@ export default function NewsletterSection() {
   return (
     <section className="py-16 bg-gradient-to-r from-teal-500 to-blue-500 relative overflow-hidden">
       <div className="absolute right-0 bottom-0 w-64 h-64 md:w-80 md:h-80">
-        <Image src="/placeholder.svg?height=300&width=300" alt="Cat" fill className="object-contain" />
+        <Image src="https://pet1.mauthemewp.com/wp-content/uploads/2024/10/shutterstock_184908566-copy.webp" alt="Cat" fill className="object-contain" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">

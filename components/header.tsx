@@ -25,17 +25,13 @@ import { toast } from "sonner"
 import { type IUser, useAppStore } from "./app-provider"
 
 const dogCategories = [
-  { name: "Thức ăn hạt", href: "/san-pham/cho/thuc-an-hat", icon: "🍖" },
-  { name: "Pate", href: "/san-pham/cho/pate", icon: "🥫" },
-  { name: "Bánh thưởng", href: "/san-pham/cho/banh-thuong", icon: "🍪" },
-  { name: "Đồ nhai", href: "/san-pham/cho/do-nhai", icon: "🦴" },
+  { name: "Thức ăn cho chó", href: "/san-pham", icon: "🍖" },
+  { name: "Phụ kiện cho chó", href: "/san-pham", icon: "🥫" },
 ]
 
 const catCategories = [
-  { name: "Thức ăn hạt", href: "/san-pham/meo/thuc-an-hat", icon: "🍖" },
-  { name: "Pate", href: "/san-pham/meo/pate", icon: "🥫" },
-  { name: "Cát vệ sinh", href: "/san-pham/meo/cat-ve-sinh", icon: "🧹" },
-  { name: "Đồ chơi", href: "/san-pham/meo/do-choi", icon: "🧶" },
+  { name: "Thức ăn cho mèo", href: "/san-pham", icon: "🍖" },
+  { name: "Phụ kiện cho mèo", href: "/san-pham", icon: "🥫" },
 ]
 
 export default function Header() {

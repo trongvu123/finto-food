@@ -21,7 +21,7 @@ export default function HeroSection() {
     {
       title: "Phụ kiện thông minh cho thú cưng",
       description: "Khám phá các thiết bị và phụ kiện thông minh giúp chăm sóc thú cưng dễ dàng hơn.",
-      image: "/placeholder.svg?height=600&width=800",
+      image: "/hero-bg.png",
       buttonText: "Xem sản phẩm",
       buttonLink: "/san-pham",
     },

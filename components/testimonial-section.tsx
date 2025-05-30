@@ -16,7 +16,7 @@ export default function TestimonialSection() {
       id: 1,
       name: "Nguyễn Thị Hương",
       role: "Chủ của Milu",
-      avatar: "/placeholder.svg?height=100&width=100",
+      avatar: "https://pet1.mauthemewp.com/wp-content/uploads/2024/10/NHAN-SU-NGOC-TRANG-768x1152.webp",
       content:
         "Tôi rất hài lòng với chất lượng thức ăn cho chó của Finto. Milu nhà tôi rất thích và khỏe mạnh hơn nhiều kể từ khi sử dụng sản phẩm này.",
     },
@@ -24,7 +24,7 @@ export default function TestimonialSection() {
       id: 2,
       name: "Trần Văn Nam",
       role: "Chủ của Kitty",
-      avatar: "/placeholder.svg?height=100&width=100",
+      avatar: "https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/425481734_1524908561687658_5058781015732020878_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=108&ccb=1-7&_nc_sid=e99d92&_nc_ohc=ONHOyr06hgAQ7kNvwFfjftO&_nc_oc=Adk5KcB5kUQK7KgxGp21tg5Qu55dSjsNXDebq4LUUWBRSmGbTT6By_RlBL-Aavi19ww&_nc_zt=24&_nc_ht=scontent.fhan2-3.fna&_nc_gid=yyzEW2yLEFi2VBg_auDM1Q&oh=00_AfL63wgw8PF1BY0BmSqUlCGRGmNCWpzRPOzj7dWUaOk76g&oe=683F0EF4",
       content:
         "Dịch vụ giao hàng nhanh chóng và sản phẩm chất lượng cao. Tôi đặc biệt thích cát vệ sinh cho mèo, rất hiệu quả và không có mùi hôi.",
     },
@@ -32,7 +32,7 @@ export default function TestimonialSection() {
       id: 3,
       name: "Lê Minh Anh",
       role: "Chủ của Bông",
-      avatar: "/placeholder.svg?height=100&width=100",
+      avatar: "https://pet1.mauthemewp.com/wp-content/uploads/2024/10/avatar-gai-xinh-41.jpg",
       content:
         "Finto có đa dạng sản phẩm cho thú cưng và giá cả rất hợp lý. Tôi sẽ tiếp tục mua sắm ở đây và giới thiệu cho bạn bè.",
     },
@@ -99,9 +99,8 @@ export default function TestimonialSection() {
               <button
                 key={index}
                 onClick={() => setActiveIndex(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === activeIndex ? "bg-teal-600" : "bg-gray-300"
-                }`}
+                className={`w-3 h-3 rounded-full transition-colors ${index === activeIndex ? "bg-teal-600" : "bg-gray-300"
+                  }`}
               />
             ))}
           </div>
