@@ -36,7 +36,6 @@ import { useSearchParams } from "next/navigation";
 
 export default function ProductsPage() {
     const isMobile = useMobile()
-    const params = useSearchParams()
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
@@ -46,7 +45,6 @@ export default function ProductsPage() {
     const [priceRange, setPriceRange] = useState([0, 5000000])
     const [categories, setCategories] = useState<Category[]>([])
     const [brands, setBrands] = useState<Brand[]>([])
-    const categoryQuery = params.get("category")
     const [filters, setFilters] = useState({
         categoryId: "",
         brandId: "",
@@ -95,11 +93,6 @@ export default function ProductsPage() {
         // Cập nhật active filters dựa trên các bộ lọc đã chọn
         const newActiveFilters: string[] = []
 
-        if (categoryQuery) {
-            const category = categories.find((c: any) => c.name === categoryQuery)
-            newActiveFilters.push(`Danh mục: ${category?.name}`)
-        }
-
 
         if (filters.categoryId) {
             const category = categories.find((c: any) => c.id === filters.categoryId)
@@ -124,7 +117,7 @@ export default function ProductsPage() {
         }
 
         setActiveFilters(newActiveFilters)
-    }, [filters, categories, brands, categoryQuery])
+    }, [filters, categories, brands])
 
     const handleFilterChange = (key: string, value: any) => {
         setFilters((prev) => ({ ...prev, [key]: value }))
