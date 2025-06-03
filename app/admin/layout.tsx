@@ -14,7 +14,10 @@ import {
   Settings,
   Newspaper,
   Ribbon,
-  LogOut
+  LogOut,
+  Dog,
+  PawPrint,
+  Factory
 } from "lucide-react"
 
 const menuItems = [
@@ -47,6 +50,21 @@ const menuItems = [
     title: "Blog",
     href: "/admin/blog",
     icon: Newspaper
+  },
+  {
+    title: "Dịch vụ",
+    href: "/admin/dich-vu",
+    icon: Dog
+  },
+  {
+    title: "Nhà cung cấp",
+    href: "/admin/nha-cung-cap",
+    icon: Factory
+  },
+  {
+    title: "Đơn dịch vụ",
+    href: "/admin/don-dich-vu",
+    icon: PawPrint
   }
 ]
 

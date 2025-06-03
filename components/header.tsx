@@ -7,7 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ShoppingCart, Menu, X, ChevronDown, User, LogOut, Package, Settings, Search } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, User, LogOut, Package, Settings, Search, PawPrint } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -284,6 +284,16 @@ export default function Header() {
                     >
                       <Package className="h-4 w-4" />
                       <span>Đơn hàng</span>
+                    </DropdownMenuItem>
+
+                  )}
+                  {user.role === "USER" && (
+                    <DropdownMenuItem
+                      onClick={() => router.push("/don-dich-vu")}
+                      className="flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-muted rounded-md transition-colors"
+                    >
+                      <PawPrint className="h-4 w-4" />
+                      <span>Đơn dịch vụ</span>
                     </DropdownMenuItem>
                   )}
 

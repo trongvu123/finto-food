@@ -10,6 +10,7 @@ Font.register({
     src:
         "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf"
 });
+
 const styles = StyleSheet.create({
     page: {
         padding: 30,
@@ -204,7 +205,7 @@ const InvoiceDocument = ({ invoice }: { invoice: Invoice }) => (
                 <Text style={styles.totalValue}>{formatCurrency(invoice.total)}</Text>
             </View>
             {
-                (invoice.paymentMethod === "cod" && invoice.total < 500000)  && (
+                (invoice.paymentMethod === "cod" && invoice.total < 500000) && (
                     <View style={styles.total}>
                         <Text style={styles.totalLabel}>Phí vận chuyển:</Text>
                         <Text style={styles.totalValue}>{formatCurrency(30000)}</Text>

@@ -65,7 +65,7 @@ export default function HeroSection() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-teal-600 text-teal-600 hover:bg-teal-50">
-                <Link href="/san-pham/meo">Sản phẩm cho mèo</Link>
+                <Link href="/dich-vu">Dịch vụ thú cưng</Link>
               </Button>
             </div>
 

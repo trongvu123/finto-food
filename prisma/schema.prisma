@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Review    Review[]
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  password      String
+  role          Role            @default(USER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Review        Review[]
+  ServiceReview ServiceReview[]
 }
 
 enum Role {
@@ -100,6 +101,14 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum ServiceStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 enum ReviewStatus {
   ACTIVE
   INACTIVE
@@ -141,4 +150,77 @@ model Review {
   rating    Int
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+}
+
+model Supplier {
+  id          String    @id @default(cuid())
+  name        String
+  email       String    @unique
+  phone       String
+  address     String
+  city        String
+  serviceType String
+  imageUrl    String[]
+  description String?
+  services    Service[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Service {
+  id           String          @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  salePrice    Float?
+  images       String[]
+  category     String
+  status       String          @default("active")
+  supplierId   String
+  supplier     Supplier        @relation(fields: [supplierId], references: [id])
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  ServiceOrder ServiceOrder[]
+  reviews      ServiceReview[]
+}
+
+model ServiceReview {
+  id        String   @id @default(cuid())
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ServiceOrder {
+  id            String        @id @default(cuid())
+  serviceId     String
+  service       Service       @relation(fields: [serviceId], references: [id])
+  userId        String?
+  userName      String?
+  userPhone     String?
+  userAddress   String?
+  userEmail     String?
+  userNote      String?
+  petName       String?
+  petBreed      String?
+  petAge        Int?
+  petWeight     Float?
+  petGender     String?
+  petImage      String?
+  petNote       String?
+  petStatus     String?
+  orderTime     DateTime?
+  orderCode     String?       @unique
+  paid          Boolean       @default(false)
+  status        ServiceStatus @default(PENDING)
+  paymentMethod String
+  total         Float
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  hasReviewed   Boolean       @default(false)
 }
