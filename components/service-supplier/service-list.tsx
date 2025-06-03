@@ -166,7 +166,7 @@ export default function ServicesList() {
 
           {/* Filters */}
           <AnimatePresence>
-            {(showFilters || window.innerWidth >= 1024) && (
+            {(showFilters) && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -254,8 +254,8 @@ export default function ServicesList() {
                           size="sm"
                           variant="ghost"
                           className={`rounded-full w-8 h-8 p-0 ${favorites.has(supplier.id)
-                              ? "bg-rose-100 text-rose-500 hover:bg-rose-200"
-                              : "bg-white/80 hover:bg-white"
+                            ? "bg-rose-100 text-rose-500 hover:bg-rose-200"
+                            : "bg-white/80 hover:bg-white"
                             }`}
                           onClick={() => toggleFavorite(supplier.id)}
                         >
