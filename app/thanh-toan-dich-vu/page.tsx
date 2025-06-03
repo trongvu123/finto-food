@@ -1,10 +1,18 @@
 "use client";
 
 import BookingSuccess from "@/components/service-supplier/booking-success";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function BookingSuccessPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BookingSuccessPageContent />
+        </Suspense>
+    );
+}
+
+function BookingSuccessPageContent() {
     const searchParams = useSearchParams();
     const orderCode = searchParams.get("orderId");
     const [serviceOrder, setServiceOrder] = useState(null);

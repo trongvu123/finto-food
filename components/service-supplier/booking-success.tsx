@@ -1,32 +1,50 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import { CheckCircle, Calendar, MapPin, Phone, Mail, Download, Share2, Home } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import InvoicePDFGenerator from "./invoice-pdf-generator"
+import { Suspense, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { CheckCircle, Calendar, MapPin, Phone, Mail, Download, Share2, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import InvoicePDFGenerator from "./invoice-pdf-generator";
+
 
 interface BookingSuccessProps {
     serviceOrder: any;
 }
 
-const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
-    const searchParams = useSearchParams()
-    const [mounted, setMounted] = useState(false)
+const BookingSuccessWithSuspense: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BookingSuccessContent serviceOrder={serviceOrder} />
+        </Suspense>
+    );
+};
 
-    const orderCode = serviceOrder?.orderCode || searchParams.get("orderId") || "PET123456"
-    const serviceName = serviceOrder?.service?.name || searchParams.get("service") || "Dịch vụ thú cưng"
-    const total = serviceOrder?.total || searchParams.get("total") || "0"
+
+const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
+    return <BookingSuccessWithSuspense serviceOrder={serviceOrder} />;
+};
+
+const BookingSuccessContent: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
+    const searchParams = useSearchParams();
+    const [mounted, setMounted] = useState(false);
+
+    const orderCode =
+        serviceOrder?.orderCode || searchParams.get("orderId") || "PET123456";
+    const serviceName =
+        serviceOrder?.service?.name ||
+        searchParams.get("service") ||
+        "Dịch vụ thú cưng";
+    const total = serviceOrder?.total || searchParams.get("total") || "0";
 
     useEffect(() => {
-        setMounted(true)
-    }, [])
+        setMounted(true);
+    }, []);
 
-    if (!mounted) return null
+    if (!mounted) return null;
 
     const orderInfo = {
         orderCode,
@@ -37,11 +55,13 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
         customerEmail: serviceOrder?.userEmail || "customer@example.com",
         petName: serviceOrder?.petName || "Buddy",
         orderTime: serviceOrder?.orderTime || "2024-01-20 14:00",
-        address: serviceOrder?.userAddress || "123 Nguyễn Trãi, Thanh Xuân, Hà Nội",
+        address:
+            serviceOrder?.userAddress || "123 Nguyễn Trãi, Thanh Xuân, Hà Nội",
         total: serviceOrder?.total || Number.parseInt(total),
         status: serviceOrder?.status || "Đã xác nhận",
-        paymentMethod: serviceOrder?.paymentMethod || "Thanh toán sau khi hoàn thành dịch vụ",
-    }
+        paymentMethod:
+            serviceOrder?.paymentMethod || "Thanh toán sau khi hoàn thành dịch vụ",
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -85,7 +105,11 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                 </motion.div>
 
                 {/* Order Details */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                >
                     <Card className="shadow-lg">
                         <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
                             <CardTitle className="flex items-center justify-between">
@@ -100,7 +124,9 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Service Info */}
                                 <div className="space-y-4">
-                                    <h3 className="font-semibold text-lg border-b pb-2">Thông tin dịch vụ</h3>
+                                    <h3 className="font-semibold text-lg border-b pb-2">
+                                        Thông tin dịch vụ
+                                    </h3>
                                     <div className="space-y-3">
                                         <div>
                                             <label className="text-sm text-gray-500">Dịch vụ</label>
@@ -114,7 +140,9 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                                             <Calendar className="h-4 w-4 text-gray-400" />
                                             <div>
                                                 <label className="text-sm text-gray-500">Thời gian</label>
-                                                <p className="font-medium">{new Date(orderInfo.orderTime).toLocaleString("vi-VN")}</p>
+                                                <p className="font-medium">
+                                                    {new Date(orderInfo.orderTime).toLocaleString("vi-VN")}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-2">
@@ -129,10 +157,14 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
 
                                 {/* Customer Info */}
                                 <div className="space-y-4">
-                                    <h3 className="font-semibold text-lg border-b pb-2">Thông tin khách hàng</h3>
+                                    <h3 className="font-semibold text-lg border-b pb-2">
+                                        Thông tin khách hàng
+                                    </h3>
                                     <div className="space-y-3">
                                         <div>
-                                            <label className="text-sm text-gray-500">Tên khách hàng</label>
+                                            <label className="text-sm text-gray-500">
+                                                Tên khách hàng
+                                            </label>
                                             <p className="font-medium">{orderInfo.customerName}</p>
                                         </div>
                                         <div>
@@ -142,7 +174,9 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                                         <div className="flex items-center gap-2">
                                             <Phone className="h-4 w-4 text-gray-400" />
                                             <div>
-                                                <label className="text-sm text-gray-500">Số điện thoại</label>
+                                                <label className="text-sm text-gray-500">
+                                                    Số điện thoại
+                                                </label>
                                                 <p className="font-medium">{orderInfo.customerPhone}</p>
                                             </div>
                                         </div>
@@ -169,7 +203,9 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                                     </div>
                                     <div className="flex justify-between items-center text-lg font-bold">
                                         <span>Tổng tiền:</span>
-                                        <span className="text-blue-600">{orderInfo.total.toLocaleString()}đ</span>
+                                        <span className="text-blue-600">
+                                            {orderInfo.total.toLocaleString()}đ
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +230,10 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                                     <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                                         <span className="text-blue-600 font-medium text-xs">1</span>
                                     </div>
-                                    <p>Nhà cung cấp sẽ liên hệ với bạn để xác nhận lịch hẹn trong vòng 24 giờ</p>
+                                    <p>
+                                        Nhà cung cấp sẽ liên hệ với bạn để xác nhận lịch hẹn trong vòng 24
+                                        giờ
+                                    </p>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -206,7 +245,9 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                                     <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                                         <span className="text-blue-600 font-medium text-xs">3</span>
                                     </div>
-                                    <p>Thanh toán sau khi hoàn thành dịch vụ theo phương thức đã chọn</p>
+                                    <p>
+                                        Thanh toán sau khi hoàn thành dịch vụ theo phương thức đã chọn
+                                    </p>
                                 </div>
                             </div>
                         </CardContent>
@@ -243,7 +284,8 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                     className="mt-8 text-center text-sm text-gray-500"
                 >
                     <p>
-                        Nếu có thắc mắc, vui lòng liên hệ hotline: <span className="font-medium">1900 1234 567</span>
+                        Nếu có thắc mắc, vui lòng liên hệ hotline:{" "}
+                        <span className="font-medium">1900 1234 567</span>
                     </p>
                     <p>
                         hoặc email: <span className="font-medium">support@petservice.com</span>
@@ -251,7 +293,7 @@ const BookingSuccess: React.FC<BookingSuccessProps> = ({ serviceOrder }) => {
                 </motion.div>
             </motion.div>
         </div>
-    )
-}
+    );
+};
 
-export default BookingSuccess
+export default BookingSuccess;
